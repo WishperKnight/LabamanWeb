@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab Track - Ejecuciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="d-flex">
+    <div id="sidebar-container" style="width: 250px;"></div>
+
+    <div class="flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Ejecuciones y Pruebas</h2>
+            <button class="btn btn-teal" onclick="modalEjecucion.show()">
+                <i class="fas fa-vial me-2"></i>Nueva Ejecución
+            </button>
+        </div>
+
+        <div class="content-card p-0 overflow-hidden">
+            <table class="table table-hover align-middle mb-0 text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Prueba / Protocolo</th>
+                        <th>Fecha</th>
+                        <th>Estado/Resultado</th>
+                        <th>Técnico</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-ejecuciones"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEjecucion" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Iniciar Ejecución</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Protocolo</label>
+                    <input type="text" id="ej-prueba" class="form-control" placeholder="Ej. PCR de muestra A1">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Resultado Esperado</label>
+                    <select id="ej-resultado" class="form-select">
+                        <option>En Proceso</option>
+                        <option>Exitoso</option>
+                        <option>Fallido</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Técnico Responsable</label>
+                    <input type="text" id="ej-tecnico" class="form-control" value="Admin Usuario">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-teal w-100" onclick="guardarEjecucion()">Registrar Ejecución</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="data.js"></script>
+<script src="main.js"></script>
+<script>
+    const modalEjecucion = new bootstrap.Modal(document.getElementById('modalEjecucion'));
+    const tabla = document.getElementById('lista-ejecuciones');
+
+    function renderEjecuciones() {
+        tabla.innerHTML = '';
+        ejecuciones.forEach(ej => {
+            const badge = ej.resultado === 'Exitoso' ? 'success' : (ej.resultado === 'En Proceso' ? 'info' : 'danger');
+            tabla.innerHTML += `
+                <tr>
+                    <td><small class="text-muted">${ej.id}</small></td>
+                    <td class="text-start fw-bold">${ej.prueba}</td>
+                    <td>${ej.fecha}</td>
+                    <td><span class="badge bg-${badge}">${ej.resultado}</span></td>
+                    <td>${ej.tecnico}</td>
+                    <td><button class="btn btn-sm btn-light"><i class="fas fa-eye"></i></button></td>
+                </tr>`;
+        });
+    }
+
+    function guardarEjecucion() {
+        const nueva = {
+            id: "EJ-00" + (ejecuciones.length + 1),
+            prueba: document.getElementById('ej-prueba').value,
+            fecha: new Date().toISOString().split('T')[0],
+            resultado: document.getElementById('ej-resultado').value,
+            tecnico: document.getElementById('ej-tecnico').value
+        };
+        ejecuciones.unshift(nueva);
+        renderEjecuciones();
+        modalEjecucion.hide();
+    }
+
+    renderEjecuciones();
+</script>
+</body>
+</html>
