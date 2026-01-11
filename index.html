@@ -92,7 +92,7 @@
                 localStorage.setItem('userRol', rol);
 
                 // Redirección inteligente
-                if (rol === "Administrador") {
+                if (rol === "Administrador"||rol==""||rol==null) {
                     window.location.href = "admin.html";
                 } else {
                     window.location.href = "dashboard.html";
