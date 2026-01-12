@@ -20,7 +20,7 @@
             <header class="d-flex justify-content-between align-items-center mb-5 mt-4">
                 <div>
                     <h2 class="fw-bold text-dark m-0">Gestión de Equipos</h2>
-                    <p class="text-muted small m-0">Inventario técnico extraído de base de datos oficial.</p>
+                    <p class="text-muted small m-0">Inventario técnico y material de vidriería.</p>
                 </div>
                 <div class="d-flex gap-2">
                     <label class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold mb-0">
@@ -33,24 +33,33 @@
                 </div>
             </header>
 
-            <div class="card-premium border-0 shadow-sm">
+            <div class="card-premium border-0 shadow-sm bg-white rounded-4">
                 <div class="table-responsive">
-                    <table class="table align-middle custom-table">
-                        <thead class="text-muted small fw-bold text-uppercase">
+                    <table class="table align-middle custom-table mb-0">
+                        <thead class="text-muted small fw-bold text-uppercase bg-light">
                             <tr>
-                                <th class="ps-4">Código / Equipo</th>
-                                <th>Serial / Marca</th>
-                                <th>Categoría</th>
-                                <th>Sede/Lab</th>
-                                <th>Estado</th>
-                                <th>Notas</th>
-                                <th class="text-end pe-4">Acciones</th>
+                                <th class="ps-4 py-3">Código / Equipo</th>
+                                <th class="py-3">Serial / Marca</th>
+                                <th class="py-3">Categoría</th>
+                                <th class="py-3">Sede/Lab</th>
+                                <th class="py-3">Estado</th>
+                                <th class="py-3">Notas</th>
+                                <th class="text-end pe-4 py-3">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="lista-equipos">
-                            <tr><td colspan="7" class="text-center p-5 text-muted">Conectando con el inventario...</td></tr>
+                            <tr><td colspan="7" class="text-center p-5 text-muted">Cargando inventario...</td></tr>
                         </tbody>
                     </table>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center p-4 border-top">
+                    <div class="text-muted small">
+                        Mostrando <span id="pag-inicio" class="fw-bold">0</span> - <span id="pag-fin" class="fw-bold">0</span> de <span id="pag-total" class="fw-bold">0</span> registros
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm m-0 gap-1" id="controles-paginacion"></ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -68,8 +77,8 @@
                     <div class="modal-body p-4">
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label class="form-label small fw-bold">Código Interno (PDF)</label>
-                                <input type="text" id="eq-codigo" class="form-control rounded-3 bg-light border-0" placeholder="Ej: LBB006">
+                                <label class="form-label small fw-bold">Código Interno</label>
+                                <input type="text" id="eq-codigo" class="form-control rounded-3 bg-light border-0">
                             </div>
                             <div class="col-md-8">
                                 <label class="form-label small fw-bold">Nombre del Equipo / Modelo</label>
@@ -90,29 +99,30 @@
                                     <option value="Volumetría">Volumetría</option>
                                     <option value="Óptica">Óptica</option>
                                     <option value="Térmico">Térmico</option>
+                                    <option value="Vidriería">Vidriería</option>
                                     <option value="Otros">Otros</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small fw-bold">Laboratorio</label>
+                                <label class="form-label small fw-bold">Laboratorio (Sede)</label>
                                 <select id="eq-lab" class="form-select rounded-3 bg-light border-0" required></select>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small fw-bold">Estado</label>
+                                <label class="form-label small fw-bold">Estado Actual</label>
                                 <select id="eq-estado" class="form-select rounded-3 bg-light border-0">
                                     <option value="Operativo">Operativo</option>
                                     <option value="Mantenimiento">Mantenimiento</option>
-                                    <option value="Baja">Fuera de Servicio</option>
+                                    <option value="Fuera de Servicio">Fuera de Servicio</option>
                                 </select>
                             </div>
                             <div class="col-12">
-                                <label class="form-label small fw-bold">Observaciones del PDF</label>
+                                <label class="form-label small fw-bold">Observaciones / Detalles del PDF</label>
                                 <textarea id="eq-obs" class="form-control rounded-3 bg-light border-0" rows="2"></textarea>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 p-4 pt-0">
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm">Guardar Equipo</button>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm">Guardar Cambios</button>
                     </div>
                 </form>
             </div>
@@ -127,7 +137,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Inicialización
         cargarSidebar('equipos');
         
         const firebaseConfig = { 
@@ -140,28 +149,43 @@
         const db = getFirestore(app);
         const modalEq = new bootstrap.Modal(document.getElementById('modalEquipo'));
 
-        // --- MANEJO DE CSV ---
-        document.getElementById('input-csv').addEventListener('change', async (e) => {
+        // ESTADO GLOBAL PARA PAGINACIÓN
+        let todosLosEquipos = [];
+        let paginaActual = 1;
+        const registrosPorPagina = 10;
+
+        // --- IMPORTACIÓN ---
+        document.getElementById('input-csv').onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
             try {
                 const total = await importarCSV(file, db, "equipos");
-                mostrarFeedback(`¡Éxito! Se han importado ${total} equipos del inventario.`, 'success', 'status-container');
+                mostrarFeedback(`Importación exitosa: ${total} equipos añadidos.`, 'success', 'status-container');
             } catch (err) {
                 mostrarFeedback(err, 'danger', 'status-container');
             }
             e.target.value = "";
-        });
+        };
 
-        // --- RENDERIZADO EN TIEMPO REAL ---
-        onSnapshot(collection(db, "equipos"), (snap) => {
+        // --- RENDERIZADO DINÁMICO ---
+        function renderizarPagina() {
             const cont = document.getElementById('lista-equipos');
+            const total = todosLosEquipos.length;
+            const inicio = (paginaActual - 1) * registrosPorPagina;
+            const fin = Math.min(inicio + registrosPorPagina, total);
+            const items = todosLosEquipos.slice(inicio, fin);
+
             cont.innerHTML = "";
-            
-            snap.forEach(d => {
-                const e = d.data();
-                const badgeColor = e.estado === 'Operativo' ? 'bg-success' : 'bg-warning text-dark';
-                
+            if(items.length === 0) {
+                cont.innerHTML = '<tr><td colspan="7" class="text-center p-5 text-muted">No hay datos disponibles.</td></tr>';
+                return;
+            }
+
+            items.forEach(obj => {
+                const e = obj.data;
+                const id = obj.id;
+                const badgeColor = e.estado === 'Operativo' ? 'bg-success' : (e.estado === 'Mantenimiento' ? 'bg-warning text-dark' : 'bg-danger');
+
                 cont.innerHTML += `
                     <tr>
                         <td class="ps-4">
@@ -173,28 +197,68 @@
                             <div class="text-muted small text-uppercase">${e.fabricante || '-'}</div>
                         </td>
                         <td><span class="badge bg-light text-dark border">${e.tipo}</span></td>
-                        <td><div class="small text-muted"><i class="fas fa-microscope me-1"></i>${e.laboratorio}</div></td>
+                        <td><div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${e.laboratorio}</div></td>
                         <td><span class="badge ${badgeColor} rounded-pill px-3" style="font-size: 0.7rem;">${e.estado}</span></td>
-                        <td><div class="small text-muted text-truncate" style="max-width: 120px;">${e.observaciones || '-'}</div></td>
+                        <td><div class="small text-muted text-truncate" style="max-width: 150px;">${e.observaciones || '-'}</div></td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-light text-primary rounded-circle shadow-sm" onclick="editarEquipo('${d.id}')"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="eliminarEquipo('${d.id}', '${e.nombre}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-light text-primary rounded-circle shadow-sm mx-1" onclick="editarEquipo('${id}')"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="eliminarEquipo('${id}', '${e.nombre}')"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
+
+            actualizarPaginador(total, inicio, fin);
+        }
+
+        function actualizarPaginador(total, inicio, fin) {
+            document.getElementById('pag-inicio').innerText = total === 0 ? 0 : inicio + 1;
+            document.getElementById('pag-fin').innerText = fin;
+            document.getElementById('pag-total').innerText = total;
+
+            const paginasTotales = Math.ceil(total / registrosPorPagina);
+            const nav = document.getElementById('controles-paginacion');
+            nav.innerHTML = "";
+
+            // Botón Anterior
+            nav.innerHTML += `<li class="page-item ${paginaActual === 1 ? 'disabled' : ''}"><a class="page-link border-0 rounded-pill mx-1" href="#" onclick="cambiarPagina(${paginaActual - 1})">«</a></li>`;
+
+            for (let i = 1; i <= paginasTotales; i++) {
+                if(i === 1 || i === paginasTotales || (i >= paginaActual - 1 && i <= paginaActual + 1)) {
+                    nav.innerHTML += `<li class="page-item ${i === paginaActual ? 'active' : ''}"><a class="page-link border-0 rounded-pill mx-1" href="#" onclick="cambiarPagina(${i})">${i}</a></li>`;
+                }
+            }
+
+            // Botón Siguiente
+            nav.innerHTML += `<li class="page-item ${paginaActual === paginasTotales || paginasTotales === 0 ? 'disabled' : ''}"><a class="page-link border-0 rounded-pill mx-1" href="#" onclick="cambiarPagina(${paginaActual + 1})">»</a></li>`;
+        }
+
+        window.cambiarPagina = (p) => { paginaActual = p; renderizarPagina(); };
+
+        // --- FIRESTORE LISTENERS ---
+        onSnapshot(collection(db, "equipos"), (snap) => {
+            todosLosEquipos = [];
+            snap.forEach(d => todosLosEquipos.push({ id: d.id, data: d.data() }));
+            todosLosEquipos.sort((a, b) => a.data.nombre.localeCompare(b.data.nombre));
+            renderizarPagina();
         });
 
-        // --- FUNCIONES CRUD ---
+        onSnapshot(collection(db, "laboratorios"), (snap) => {
+            const select = document.getElementById('eq-lab');
+            select.innerHTML = '<option value="" disabled selected>Seleccionar sede...</option>';
+            snap.forEach(d => select.innerHTML += `<option value="${d.data().nombre}">${d.data().nombre}</option>`);
+        });
+
+        // --- CRUD ACTIONS ---
         window.abrirModalNuevo = () => {
             document.getElementById('eq-id').value = "";
             document.getElementById('form-equipo').reset();
-            document.getElementById('modal-titulo').innerText = "Registrar Nuevo Equipo";
+            document.getElementById('modal-titulo').innerText = "Nuevo Registro Técnico";
             modalEq.show();
         };
 
         window.editarEquipo = async (id) => {
-            const snap = await getDoc(doc(db, "equipos", id));
-            const e = snap.data();
+            const d = await getDoc(doc(db, "equipos", id));
+            const e = d.data();
             document.getElementById('eq-id').value = id;
             document.getElementById('eq-codigo').value = e.codigoInterno || "";
             document.getElementById('eq-nombre').value = e.nombre;
@@ -204,19 +268,18 @@
             document.getElementById('eq-lab').value = e.laboratorio;
             document.getElementById('eq-estado').value = e.estado;
             document.getElementById('eq-obs').value = e.observaciones || "";
-            document.getElementById('modal-titulo').innerText = "Editar Equipo";
+            document.getElementById('modal-titulo').innerText = "Actualizar Ficha Técnica";
             modalEq.show();
         };
 
         window.eliminarEquipo = async (id, nombre) => {
-            if (confirm(`¿Eliminar ${nombre}?`)) await deleteDoc(doc(db, "equipos", id));
+            if(confirm(`¿Deseas eliminar el equipo ${nombre}?`)) await deleteDoc(doc(db, "equipos", id));
         };
 
-        // Guardar
         document.getElementById('form-equipo').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('eq-id').value;
-            const data = {
+            const payload = {
                 codigoInterno: document.getElementById('eq-codigo').value,
                 nombre: document.getElementById('eq-nombre').value,
                 serial: document.getElementById('eq-serial').value,
@@ -225,18 +288,11 @@
                 laboratorio: document.getElementById('eq-lab').value,
                 estado: document.getElementById('eq-estado').value,
                 observaciones: document.getElementById('eq-obs').value,
-                fechaMod: new Date().toISOString()
+                fechaUpdate: new Date().toISOString()
             };
-            id ? await updateDoc(doc(db, "equipos", id), data) : await addDoc(collection(db, "equipos"), data);
+            id ? await updateDoc(doc(db, "equipos", id), payload) : await addDoc(collection(db, "equipos"), payload);
             modalEq.hide();
         };
-
-        // Cargar labs en select
-        onSnapshot(collection(db, "laboratorios"), (snap) => {
-            const s = document.getElementById('eq-lab');
-            s.innerHTML = '<option value="" disabled selected>Seleccionar...</option>';
-            snap.forEach(d => s.innerHTML += `<option value="${d.data().nombre}">${d.data().nombre}</option>`);
-        });
 
     </script>
 </body>

@@ -11,21 +11,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-light">
 
     <div id="sidebar-container"></div>
 
     <div class="main">
         <div class="container-fluid">
-            <header class="d-flex justify-content-between align-items-center mb-5">
+            <header class="d-flex justify-content-between align-items-center mb-5 mt-4">
                 <div>
-                    <h2 class="fw-bold text-dark m-0">Hola de nuevo, Administrador</h2>
-                    <p class="text-muted small m-0">Estado de los laboratorios en tiempo real.</p>
+                    <h2 class="fw-bold text-dark m-0">Panel de Control</h2>
+                    <p class="text-muted small m-0">Gestión centralizada de activos y personal.</p>
                 </div>
                 <div class="bg-white px-3 py-2 rounded-3 shadow-sm fw-bold border">
-                    <i class="far fa-calendar-alt me-2 text-primary"></i> 12 de enero, 2026
+                    <i class="far fa-calendar-alt me-2 text-primary"></i> <span id="fecha-actual"></span>
                 </div>
             </header>
+
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card-premium border-0 shadow-sm bg-white rounded-4 p-4 border-start border-primary border-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div>
+                                <h6 class="fw-bold m-0"><i class="fas fa-file-export me-2 text-primary"></i>Plantillas de Importación</h6>
+                                <p class="text-muted small mb-0">Descarga el formato CSV para carga masiva.</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button id="btn-p-reactivos" class="btn btn-primary rounded-pill px-3 shadow-sm btn-sm">
+                                    <i class="fas fa-flask me-2"></i>Reactivos
+                                </button>
+                                <button id="btn-p-fungibles" class="btn btn-info text-white rounded-pill px-3 shadow-sm btn-sm">
+                                    <i class="fas fa-box me-2"></i>Fungibles
+                                </button>
+                                <button id="btn-p-equipos" class="btn btn-dark rounded-pill px-3 shadow-sm btn-sm">
+                                    <i class="fas fa-microscope me-2"></i>Equipos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row g-4 mb-5">
                 <div class="col-6 col-lg-3">
@@ -36,13 +60,13 @@
                 </div>
                 <div class="col-6 col-lg-3">
                     <div class="stat-card-premium card-green">
-                        <div class="icon-box"><i class="fas fa-microscope"></i></div>
-                        <div><h2 id="count-ejecuciones" class="fw-bold mb-0">0</h2><small class="text-muted fw-bold">PROCESOS</small></div>
+                        <div class="icon-box"><i class="fas fa-vials"></i></div>
+                        <div><h2 id="count-materiales" class="fw-bold mb-0">0</h2><small class="text-muted fw-bold">ARTÍCULOS</small></div>
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
                     <div class="stat-card-premium card-red">
-                        <div class="icon-box"><i class="fas fa-bolt"></i></div>
+                        <div class="icon-box"><i class="fas fa-exclamation-circle"></i></div>
                         <div><h2 id="count-incidencias" class="fw-bold mb-0">0</h2><small class="text-muted fw-bold">INCIDENCIAS</small></div>
                     </div>
                 </div>
@@ -55,38 +79,31 @@
             </div>
 
             <div class="row g-4 mb-5">
-                <div class="col-lg-7">
-                    <div class="card-premium h-100">
-                        <h6 class="fw-bold mb-4"><i class="fas fa-sync-alt fa-spin me-2 text-primary"></i>Ejecuciones en curso</h6>
-                        <div id="contenedor-ejecuciones"></div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="card-premium h-100">
-                        <h6 class="fw-bold mb-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Alertas Críticas</h6>
-                        <div id="contenedor-incidencias"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-12">
-                    <div class="card-premium">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h6 class="fw-bold m-0"><i class="fas fa-list me-2 text-primary"></i>Detalle de Laboratorios</h6>
-                        </div>
+                <div class="col-lg-8">
+                    <div class="card-premium h-100 shadow-sm border-0 bg-white p-4 rounded-4">
+                        <h6 class="fw-bold mb-4"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Estado de Laboratorios</h6>
                         <div class="table-responsive">
                             <table class="table align-middle">
                                 <thead class="text-muted small">
                                     <tr>
-                                        <th>LABORATORIO</th>
+                                        <th>NOMBRE</th>
                                         <th>UBICACIÓN</th>
-                                        <th>CAPACIDAD</th>
+                                        <th>PERSONAL ASIGNADO</th>
                                         <th class="text-end">ESTADO</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabla-laboratorios-body"></tbody>
+                                <tbody id="tabla-labs">
+                                    </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card-premium h-100 shadow-sm border-0 bg-white p-4 rounded-4">
+                        <h6 class="fw-bold mb-4 text-danger"><i class="fas fa-bell me-2"></i>Alertas Críticas</h6>
+                        <div id="contenedor-alertas">
+                            <div class="text-center py-5 text-muted small">Cargando alertas...</div>
                         </div>
                     </div>
                 </div>
@@ -94,10 +111,12 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { cargarSidebar } from './sidebar.js';
+        import { descargarCSV } from './exportador-csv.js'; 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         cargarSidebar('dashboard');
 
@@ -107,88 +126,85 @@
             projectId: "labmanager-b85b1", 
             appId: "1:651630503448:web:9a327cbf30b84fd763c56d" 
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- EJECUCIONES ---
-        onSnapshot(collection(db, "ejecuciones"), (snap) => {
-            document.getElementById('count-ejecuciones').innerText = snap.size;
-            const cont = document.getElementById('contenedor-ejecuciones');
-            cont.innerHTML = "";
-            snap.forEach(doc => {
-                const e = doc.data();
-                const progreso = e.estado === 'Completado' ? 100 : (e.estado === 'En curso' ? 65 : 15);
-                cont.innerHTML += `
-                    <div class="p-3 mb-3 bg-light rounded-4 border">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div><span class="fw-bold d-block text-dark">${e.protocolo}</span><small class="text-muted">${e.tecnico}</small></div>
-                            <span class="badge ${progreso === 100 ? 'bg-success' : 'bg-primary'} rounded-pill">${e.estado}</span>
-                        </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar ${progreso === 100 ? 'bg-success' : 'bg-primary'} progress-bar-striped progress-bar-animated" style="width: ${progreso}%"></div>
-                        </div>
-                    </div>`;
-            });
-        });
+        // Fecha Actual
+        document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        // --- INCIDENCIAS CON GESTIÓN ---
-        onSnapshot(collection(db, "incidencias"), (snap) => {
-            const cont = document.getElementById('contenedor-incidencias');
-            cont.innerHTML = "";
-            let activos = 0;
+        // --- MANEJO DE DATOS CRUZADOS (USUARIOS + LABS) ---
+        let usuariosGlobales = [];
+        let labsGlobales = [];
 
-            snap.forEach(docSnap => {
-                const i = docSnap.data();
-                if (i.estado === 'cerrado') return; // Filtro para no mostrar cerradas
-                
-                activos++;
-                cont.innerHTML += `
-                    <div class="p-3 mb-2 border-start border-danger border-4 bg-light rounded-end d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-bold small text-danger">${i.laboratorio}</span>
-                                <small class="text-muted ms-3">${i.FechaDeRegistro ? i.FechaDeRegistro.substring(0,10) : 'Hoy'}</small>
-                            </div>
-                            <p class="small mb-0 text-dark fw-bold">${i.Momento || 'Alerta'}</p>
-                            <p class="small text-muted mb-0 lh-sm">${i.Descripcion}</p>
-                        </div>
-                        <button onclick="gestionarIncidencia('${docSnap.id}')" class="btn btn-sm btn-white border shadow-sm rounded-circle text-success ms-2">
-                            <i class="fas fa-check"></i>
-                        </button>
-                    </div>`;
-            });
-            document.getElementById('count-incidencias').innerText = activos;
-            if (activos === 0) cont.innerHTML = '<div class="text-center py-4 text-muted small">Sin alertas pendientes.</div>';
-        });
+        function renderizarTablaLabs() {
+            const tb = document.getElementById('tabla-labs');
+            tb.innerHTML = "";
+            
+            labsGlobales.forEach(lab => {
+                // Filtramos usuarios que pertenezcan a este lab
+                const tecnicosEnLab = usuariosGlobales.filter(u => u.laboratorioId === lab.id).length;
+                const textoTecnicos = tecnicosEnLab === 1 ? "1 Especialista" : `${tecnicosEnLab} Especialistas`;
 
-        // Función Global para Cerrar Incidencia
-        window.gestionarIncidencia = async (id) => {
-            if (confirm("¿Marcar esta incidencia como resuelta?")) {
-                try {
-                    await updateDoc(doc(db, "incidencias", id), { estado: "cerrado" });
-                } catch (e) { alert("Error al actualizar"); }
-            }
-        };
-
-        // --- LABORATORIOS ---
-        onSnapshot(collection(db, "laboratorios"), (snap) => {
-            document.getElementById('count-labs').innerText = snap.size;
-            const cont = document.getElementById('tabla-laboratorios-body');
-            cont.innerHTML = "";
-            snap.forEach(doc => {
-                const l = doc.data();
-                cont.innerHTML += `
+                tb.innerHTML += `
                     <tr>
-                        <td><div class="fw-bold text-dark">${l.nombre || 'Sede'}</div></td>
-                        <td><span class="text-muted small">${l.ubicacion || 'N/A'}</span></td>
-                        <td><span class="badge bg-light text-dark border">${l.capacidad || '0'} equipos</span></td>
-                        <td class="text-end"><span class="badge bg-success-subtle text-success">Activo</span></td>
+                        <td><div class="fw-bold text-dark">${lab.nombre}</div></td>
+                        <td><span class="text-muted small"><i class="fas fa-location-dot me-1"></i>${lab.ubicacion || 'N/A'}</span></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="badge bg-light text-primary border me-2"><i class="fas fa-users-cog"></i></div>
+                                <span class="small fw-bold">${textoTecnicos}</span>
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <span class="badge bg-success-subtle text-success border-0 px-3 rounded-pill">Activo</span>
+                        </td>
                     </tr>`;
             });
+        }
+
+        // Listeners Realtime
+        onSnapshot(collection(db, "usuarios"), snap => {
+            usuariosGlobales = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('count-users').innerText = snap.size;
+            renderizarTablaLabs();
         });
 
-        onSnapshot(collection(db, "usuarios"), s => document.getElementById('count-users').innerText = s.size);
+        onSnapshot(collection(db, "laboratorios"), snap => {
+            labsGlobales = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('count-labs').innerText = snap.size;
+            renderizarTablaLabs();
+        });
+
+        onSnapshot(collection(db, "inventario"), snap => {
+            document.getElementById('count-materiales').innerText = snap.size;
+            const alertaCont = document.getElementById('contenedor-alertas');
+            let alertasHTML = "";
+            
+            snap.forEach(doc => {
+                const m = doc.data();
+                // Alerta si el stock es bajo (menos de 5 unidades)
+                if(Number(m.cantidad_unidades) < 5) {
+                    alertasHTML += `
+                        <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-2 py-2 px-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small fw-bold text-dark">${m.nombre}</span>
+                                <span class="badge bg-danger rounded-pill">${m.cantidad_unidades} uds</span>
+                            </div>
+                        </div>`;
+                }
+            });
+            alertaCont.innerHTML = alertasHTML || '<div class="text-center py-5 text-muted small">No hay alertas de stock.</div>';
+        });
+
+        onSnapshot(collection(db, "incidencias"), s => document.getElementById('count-incidencias').innerText = s.size);
+
+        // --- BOTONES DE PLANTILLAS ---
+        document.getElementById('btn-p-reactivos').onclick = () => {
+            descargarCSV([{"Nombre": "Ej: Etanol", "Fabricante": "Panreac", "Cantidad": "1", "Caducidad": "2026-01-01", "Lote": "L123", "Molaridad": "1M", "Riqueza": "99%", "Stock": "10", "Tipo": "reactivo"}], "Plantilla_Reactivos");
+        };
+        document.getElementById('btn-p-fungibles').onclick = () => {
+            descargarCSV([{"Nombre": "Ej: Guantes", "Marca": "Deltalab", "Unidades": "100", "Capacidad": "M", "Lote": "L99", "Fecha de caducidad": "2030-01-01", "Tipo": "fungible"}], "Plantilla_Fungibles");
+        };
     </script>
 </body>
 </html>

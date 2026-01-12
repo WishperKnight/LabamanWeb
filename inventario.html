@@ -8,64 +8,126 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-light">
 
     <div id="sidebar-container"></div>
 
     <div class="main">
         <div class="container-fluid">
-            <div id="status-container" class="mt-3"></div>
-
+            
             <header class="d-flex justify-content-between align-items-center mb-4 mt-4">
                 <div>
-                    <h2 class="fw-bold text-dark m-0">Inventario de Materiales</h2>
-                    <p class="text-muted small m-0">Reactivos y Fungibles (excluyendo Vidriería).</p>
+                    <h2 class="fw-bold text-dark m-0">Inventario de Laboratorio</h2>
+                    <p class="text-muted small m-0">Gestión de Reactivos y Fungibles</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <label class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold mb-0">
-                        <i class="fas fa-file-upload me-2"></i>Importar Materiales
-                        <input type="file" id="input-csv" accept=".csv" hidden>
-                    </label>
+                    <button class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm" onclick="document.getElementById('input-importar').click()">
+                        <i class="fas fa-file-upload me-2"></i>Importar CSV
+                    </button>
+                    <input type="file" id="input-importar" accept=".csv" class="d-none">
+                    <button class="btn btn-outline-success rounded-pill px-4 fw-bold shadow-sm" id="btn-exportar-csv">
+                        <i class="fas fa-file-download me-2"></i>Exportar CSV
+                    </button>
+                    <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" onclick="abrirModalNuevo()">
+                        <i class="fas fa-plus me-2"></i>Nuevo Registro
+                    </button>
                 </div>
             </header>
 
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="input-group bg-white rounded-pill shadow-sm px-3 border">
-                        <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-muted"></i></span>
-                        <input type="text" id="buscador" class="form-control border-0 bg-transparent" placeholder="Buscar reactivo, lote o marca...">
-                    </div>
+            <div class="card-premium border-0 shadow-sm mb-4 bg-white p-3 rounded-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="busqueda" class="form-control bg-transparent border-0" placeholder="Buscar material o lote...">
                 </div>
             </div>
 
+            <ul class="nav nav-pills mb-4 bg-white p-2 rounded-pill shadow-sm d-inline-flex">
+                <li class="nav-item">
+                    <button class="nav-link active rounded-pill px-4 fw-bold" id="tab-reactivos" data-bs-toggle="pill" data-bs-target="#content-main" onclick="setTipoActual('reactivo')">
+                        <i class="fas fa-vial me-2"></i>Reactivos
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link rounded-pill px-4 fw-bold" id="tab-fungibles" data-bs-toggle="pill" data-bs-target="#content-main" onclick="setTipoActual('fungible')">
+                        <i class="fas fa-box-tissue me-2"></i>Fungibles
+                    </button>
+                </li>
+            </ul>
+
             <div class="card-premium border-0 shadow-sm bg-white rounded-4 overflow-hidden">
                 <div class="table-responsive">
-                    <table class="table align-middle m-0">
+                    <table class="table align-middle mb-0">
                         <thead class="bg-light text-muted small fw-bold text-uppercase">
-                            <tr>
-                                <th class="ps-4">Material / Marca</th>
-                                <th>Tipo</th>
-                                <th>Stock</th>
-                                <th>Lote</th>
-                                <th>Caducidad</th>
-                                <th class="text-end pe-4">Acciones</th>
-                            </tr>
+                            <tr id="encabezados-tabla"></tr>
                         </thead>
-                        <tbody id="lista-inventario">
-                            <tr><td colspan="6" class="text-center p-5 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Cargando inventario...</td></tr>
-                        </tbody>
+                        <tbody id="lista-materiales"></tbody>
                     </table>
                 </div>
+            </div>
 
-                <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
-                    <div class="text-muted small">Mostrando <span id="page-info" class="fw-bold">0-0</span> de <span id="total-info">0</span></div>
-                    <nav>
-                        <ul class="pagination pagination-sm m-0 gap-2">
-                            <li class="page-item"><button class="page-link rounded-circle border-0 shadow-sm" id="prev-page"><i class="fas fa-chevron-left"></i></button></li>
-                            <li class="page-item"><button class="page-link rounded-circle border-0 shadow-sm" id="next-page"><i class="fas fa-chevron-right"></i></button></li>
-                        </ul>
-                    </nav>
-                </div>
+            <div class="d-flex justify-content-between align-items-center p-4">
+                <div class="text-muted small">Total: <span id="pag-total" class="fw-bold">0</span></div>
+                <nav><ul class="pagination pagination-sm m-0 gap-1" id="controles-paginacion"></ul></nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalArticulo" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <form id="form-articulo">
+                    <div class="modal-header border-0 px-4 pt-4">
+                        <h5 class="fw-bold m-0 text-primary">Ficha de Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="art-id">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold">Nombre</label>
+                                <input type="text" id="art-nombre" class="form-control bg-light border-0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Tipo</label>
+                                <select id="art-tipo" class="form-select bg-light border-0" onchange="toggleCamposModal()">
+                                    <option value="reactivo">Reactivo</option>
+                                    <option value="fungible">Fungible</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Marca</label>
+                                <input type="text" id="art-marca" class="form-control bg-light border-0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Stock</label>
+                                <input type="number" id="art-stock" class="form-control bg-light border-0" required>
+                            </div>
+                            <div class="col-md-6 campo-reactivo">
+                                <label class="form-label small fw-bold text-primary">Riqueza</label>
+                                <input type="text" id="art-riqueza" class="form-control bg-primary-subtle border-0">
+                            </div>
+                            <div class="col-md-6 campo-reactivo">
+                                <label class="form-label small fw-bold text-primary">Molaridad</label>
+                                <input type="text" id="art-molaridad" class="form-control bg-primary-subtle border-0">
+                            </div>
+                            <div class="col-md-12 campo-fungible d-none">
+                                <label class="form-label small fw-bold text-info">Capacidad</label>
+                                <input type="text" id="art-capacidad" class="form-control bg-info-subtle border-0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Lote</label>
+                                <input type="text" id="art-lote" class="form-control bg-light border-0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Caducidad</label>
+                                <input type="date" id="art-caducidad" class="form-control bg-light border-0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -73,112 +135,173 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { cargarSidebar } from './sidebar.js';
-        import { importarCSV, mostrarFeedback } from './importador-csv.js';
+        import { descargarCSV } from './exportador-csv.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         cargarSidebar('inventario');
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", 
-            authDomain: "labmanager-b85b1.firebaseapp.com", 
-            projectId: "labmanager-b85b1", 
-            appId: "1:651630503448:web:9a327cbf30b84fd763c56d" 
-        };
+        const firebaseConfig = { apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", authDomain: "labmanager-b85b1.firebaseapp.com", projectId: "labmanager-b85b1", appId: "1:651630503448:web:9a327cbf30b84fd763c56d" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const modalArt = new bootstrap.Modal(document.getElementById('modalArticulo'));
 
-        let dataFull = [];
-        let dataFiltered = [];
-        let page = 1;
-        const perPage = 10;
+        let datosGlobales = [];
+        window.tipoActual = 'reactivo';
+        window.paginaActual = 1;
+        const registrosPorPagina = 10;
 
-        // --- CARGA Y ESCUCHA ---
-        onSnapshot(collection(db, "inventario"), (snap) => {
-            dataFull = [];
-            snap.forEach(d => dataFull.push({ id: d.id, ...d.data() }));
-            filtrar();
-        });
+        // Función para cambiar página (necesaria en global para el onclick)
+        window.cambiarPagina = (p) => {
+            window.paginaActual = p;
+            renderizar();
+        };
 
-        // --- FILTRADO ---
-        document.getElementById('buscador').oninput = (e) => filtrar(e.target.value);
+        window.setTipoActual = (t) => {
+            window.tipoActual = t;
+            window.paginaActual = 1;
+            renderizar();
+        };
 
-        function filtrar(term = "") {
-            const q = term.toLowerCase();
-            dataFiltered = dataFull.filter(m => 
-                m.nombre.toLowerCase().includes(q) || 
-                (m.lote && m.lote.toLowerCase().includes(q)) ||
-                (m.marca && m.marca.toLowerCase().includes(q))
-            );
-            page = 1;
-            render();
-        }
+        function renderizar() {
+            const query = document.getElementById('busqueda').value.toLowerCase();
+            const filtrados = datosGlobales.filter(i => i.tipo === window.tipoActual && (i.nombre.toLowerCase().includes(query) || (i.lote || "").toLowerCase().includes(query)));
+            
+            const header = document.getElementById('encabezados-tabla');
+            header.innerHTML = `
+                <th class="ps-4">Producto</th>
+                <th>Stock</th>
+                ${window.tipoActual === 'reactivo' ? '<th>Riqueza</th><th>Molaridad</th>' : '<th>Capacidad</th>'}
+                <th>Lote / Caducidad</th>
+                <th class="text-end pe-4">Acciones</th>
+            `;
 
-        // --- RENDERIZADO ---
-        function render() {
-            const cont = document.getElementById('lista-inventario');
-            const start = (page - 1) * perPage;
-            const end = start + perPage;
-            const items = dataFiltered.slice(start, end);
+            const total = filtrados.length;
+            const items = filtrados.slice((window.paginaActual - 1) * registrosPorPagina, window.paginaActual * registrosPorPagina);
+            const tbody = document.getElementById('lista-materiales');
+            tbody.innerHTML = "";
 
-            cont.innerHTML = items.length ? "" : '<tr><td colspan="6" class="text-center p-5">No se encontraron materiales.</td></tr>';
-
-            items.forEach(m => {
-                const stockAlerta = m.cantidad < 5 ? 'text-danger fw-bold' : '';
-                cont.innerHTML += `
+            items.forEach(item => {
+                const hoy = new Date();
+                const esCaducado = item.caducidad && new Date(item.caducidad) < hoy;
+                tbody.innerHTML += `
                     <tr>
-                        <td class="ps-4">
-                            <div class="fw-bold text-dark">${m.nombre}</div>
-                            <div class="text-muted small">${m.marca || 'N/A'}</div>
-                        </td>
-                        <td><span class="badge bg-blue-subtle text-primary border-0">${m.tipo}</span></td>
-                        <td class="${stockAlerta}">${m.cantidad} uds</td>
-                        <td><small class="bg-light px-2 py-1 rounded border">${m.lote || 'N/A'}</small></td>
-                        <td>
-                            <span class="small text-muted"><i class="far fa-calendar me-1"></i>${m.caducidad || 'S/F'}</span>
-                        </td>
+                        <td class="ps-4"><strong>${item.nombre}</strong><br><small class="text-muted">${item.marca_fabricante || 'N/A'}</small></td>
+                        <td><span class="badge bg-light text-dark border">${item.cantidad_unidades || 0}</span></td>
+                        ${window.tipoActual === 'reactivo' ? `<td>${item.riqueza || '-'}</td><td>${item.molaridad || '-'}</td>` : `<td>${item.capacidad || '-'}</td>`}
+                        <td><small>L: ${item.lote || '-'}</small><br><small class="${esCaducado ? 'text-danger fw-bold' : ''}">F: ${item.caducidad || 'S/F'}</small></td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-light text-danger rounded-circle" onclick="eliminarMaterial('${m.id}', '${m.nombre}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <button class="btn btn-sm btn-light text-primary rounded-circle mx-1" onclick="editarItem('${item.id}')"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-sm btn-light text-danger rounded-circle" onclick="eliminarItem('${item.id}')"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
-
-            document.getElementById('page-info').innerText = `${start + 1}-${Math.min(end, dataFiltered.length)}`;
-            document.getElementById('total-info').innerText = dataFiltered.length;
-            document.getElementById('prev-page').disabled = page === 1;
-            document.getElementById('next-page').disabled = end >= dataFiltered.length;
+            actualizarPag(total);
         }
 
-        // --- NAVEGACIÓN ---
-        document.getElementById('prev-page').onclick = () => { if(page > 1) { page--; render(); }};
-        document.getElementById('next-page').onclick = () => { if((page * perPage) < dataFiltered.length) { page++; render(); }};
+        function actualizarPag(t) {
+            document.getElementById('pag-total').innerText = t;
+            const paginasTotales = Math.ceil(t / registrosPorPagina);
+            const nav = document.getElementById('controles-paginacion');
+            nav.innerHTML = "";
+            
+            if(paginasTotales <= 1) return;
 
-        // --- ELIMINAR ---
-        window.eliminarMaterial = async (id, nombre) => {
-            if (confirm(`¿Eliminar ${nombre} del inventario?`)) await deleteDoc(doc(db, "inventario", id));
-        };
-
-        // --- IMPORTAR ---
-        document.getElementById('input-csv').onchange = async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                try {
-                    const n = await importarCSV(file, db, "inventario");
-                    mostrarFeedback(`¡${n} materiales cargados!`, 'success', 'status-container');
-                } catch (err) {
-                    mostrarFeedback(err, 'danger', 'status-container');
-                }
+            for(let i = 1; i <= paginasTotales; i++) {
+                nav.innerHTML += `
+                    <li class="page-item ${i === window.paginaActual ? 'active' : ''}">
+                        <a class="page-link shadow-sm border-0 rounded mx-1" href="javascript:void(0)" onclick="window.cambiarPagina(${i})">${i}</a>
+                    </li>`;
             }
-        };
-    </script>
+        }
 
-    <style>
-        .bg-blue-subtle { background-color: #eef2ff; color: #4338ca; }
-        .page-link { cursor: pointer; transition: 0.2s; }
-        .page-link:hover { background: #3b82f6 !important; color: white !important; }
-        .page-link:disabled { opacity: 0.3; cursor: not-allowed; }
-    </style>
+        // Importación CSV
+        document.getElementById('input-importar').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const lines = event.target.result.split('\n');
+                let count = 0;
+                for(let i=1; i<lines.length; i++) {
+                    const col = lines[i].split(',');
+                    if(col.length < 2) continue;
+                    await addDoc(collection(db, "inventario"), {
+                        tipo: col[0].trim().toLowerCase(),
+                        nombre: col[1].trim(),
+                        marca_fabricante: col[2].trim(),
+                        cantidad_unidades: Number(col[3]) || 0,
+                        caducidad: col[4].trim(),
+                        lote: col[5].trim(),
+                        riqueza: col[6]?.trim() || "",
+                        molaridad: col[7]?.trim() || "",
+                        capacidad: col[8]?.trim() || ""
+                    });
+                    count++;
+                }
+                alert(`Importados ${count} registros.`);
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('btn-exportar-csv').onclick = () => {
+            const map = datosGlobales.map(i => ({ Tipo: i.tipo, Nombre: i.nombre, Marca: i.marca_fabricante, Stock: i.cantidad_unidades, Caducidad: i.caducidad, Lote: i.lote, Riqueza: i.riqueza, Molaridad: i.molaridad, Capacidad: i.capacidad }));
+            descargarCSV(map, "Inventario_LabTrack");
+        };
+
+        window.toggleCamposModal = () => {
+            const t = document.getElementById('art-tipo').value;
+            document.querySelectorAll('.campo-reactivo').forEach(e => e.classList.toggle('d-none', t !== 'reactivo'));
+            document.querySelectorAll('.campo-fungible').forEach(e => e.classList.toggle('d-none', t !== 'fungible'));
+        };
+
+        window.abrirModalNuevo = () => { document.getElementById('form-articulo').reset(); document.getElementById('art-id').value=""; window.toggleCamposModal(); modalArt.show(); };
+
+        window.editarItem = async (id) => {
+            const d = await getDoc(doc(db, "inventario", id));
+            const i = d.data();
+            document.getElementById('art-id').value = id;
+            document.getElementById('art-nombre').value = i.nombre;
+            document.getElementById('art-tipo').value = i.tipo;
+            document.getElementById('art-marca').value = i.marca_fabricante || "";
+            document.getElementById('art-stock').value = i.cantidad_unidades || 0;
+            document.getElementById('art-riqueza').value = i.riqueza || "";
+            document.getElementById('art-molaridad').value = i.molaridad || "";
+            document.getElementById('art-capacidad').value = i.capacidad || "";
+            document.getElementById('art-lote').value = i.lote || "";
+            document.getElementById('art-caducidad').value = i.caducidad || "";
+            window.toggleCamposModal();
+            modalArt.show();
+        };
+
+        document.getElementById('form-articulo').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('art-id').value;
+            const data = {
+                nombre: document.getElementById('art-nombre').value,
+                tipo: document.getElementById('art-tipo').value,
+                marca_fabricante: document.getElementById('art-marca').value,
+                cantidad_unidades: Number(document.getElementById('art-stock').value),
+                riqueza: document.getElementById('art-riqueza').value,
+                molaridad: document.getElementById('art-molaridad').value,
+                capacidad: document.getElementById('art-capacidad').value,
+                lote: document.getElementById('art-lote').value,
+                caducidad: document.getElementById('art-caducidad').value
+            };
+            id ? await updateDoc(doc(db, "inventario", id), data) : await addDoc(collection(db, "inventario"), data);
+            modalArt.hide();
+        };
+
+        window.eliminarItem = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "inventario", id)); };
+
+        document.getElementById('busqueda').oninput = () => { window.paginaActual = 1; renderizar(); };
+        
+        onSnapshot(collection(db, "inventario"), s => { 
+            datosGlobales = []; 
+            s.forEach(d => datosGlobales.push({id:d.id, ...d.data()})); 
+            renderizar(); 
+        });
+
+    </script>
 </body>
 </html>
