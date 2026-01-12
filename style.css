@@ -1,107 +1,70 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
 
 :root {
-    --bg-body: #f8fafc;
-    --sidebar-bg: #1e293b;
-    --primary: #4f46e5;
-    --success: #10b981;
-    --danger: #ef4444;
-    --text-main: #1e293b;
-    --white: #ffffff;
-    --radius: 16px;
-    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --bg-body: #f4f7fe;
+    --indigo: #6366f1;
+    --sidebar-bg: #111827;
 }
 
 body {
     background-color: var(--bg-body);
     font-family: 'Plus Jakarta Sans', sans-serif;
-    margin: 0;
 }
 
-/* --- SIDEBAR FIJA --- */
+/* Layout */
 #sidebar-container {
     width: 260px;
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-    z-index: 1000;
     background: var(--sidebar-bg);
+    z-index: 1000;
 }
 
-/* --- CONTENIDO PRINCIPAL --- */
 .main {
-    margin-left: 260px; /* Alineación perfecta al lado de la sidebar */
+    margin-left: 260px;
     padding: 2.5rem;
-    min-height: 100vh;
 }
 
-/* --- TARJETAS MODERNAS --- */
-.card-custom {
-    background: var(--white);
-    border-radius: var(--radius);
-    border: none;
-    box-shadow: var(--shadow);
+/* Cards Premium */
+.card-premium {
+    background: white;
+    border-radius: 20px;
     padding: 1.5rem;
-    transition: transform 0.2s;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+    border: none;
 }
 
-.card-custom:hover {
-    transform: translateY(-5px);
-}
-
-.stat-card {
-    color: white;
+.stat-card-premium {
+    background: white;
+    border-radius: 20px;
+    padding: 1.2rem;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
 }
 
-.stat-icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    opacity: 0.8;
+.icon-box {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
 }
 
-.scroll-section {
-    max-height: 500px;
-    overflow-y: auto;
-}
+.card-blue .icon-box { background: #eef2ff; color: #6366f1; }
+.card-green .icon-box { background: #f0fdf4; color: #22c55e; }
+.card-red .icon-box { background: #fef2f2; color: #ef4444; }
+.card-dark .icon-box { background: #f8fafc; color: #1e293b; }
 
-/* --- RESPONSIVIDAD --- */
-@media (max-width: 992px) {
-    #sidebar-container { transform: translateX(-100%); }
-    #sidebar-container.active { transform: translateX(0); }
-    .main { margin-left: 0; padding: 1.5rem; }
-    .mobile-header { display: flex !important; }
-}
-/* --- COLORES DE TEXTO EN SIDEBAR --- */
+/* Sidebar Links */
+.active-link { background-color: var(--indigo) !important; color: white !important; }
+.inactive-link { color: #94a3b8 !important; text-decoration: none; }
+.inactive-link:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
 
-/* Enlace inactivo: Gris azulado claro */
-.inactive-link {
-    color: #94a3b8 !important; /* Color gris suave */
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.inactive-link:hover {
-    color: #ffffff !important; /* Pasa a blanco al poner el ratón */
-    background: rgba(255, 255, 255, 0.05);
-}
-
-/* Enlace activo: Blanco puro con fondo destacado */
-.active-link {
-    color: #ffffff !important;
-    background-color: #4f46e5 !important; /* Fondo Indigo */
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-    text-decoration: none;
-}
-
-.active-link i {
-    color: #ffffff !important;
-}
-
-/* Estilo general para los iconos de la sidebar */
-.nav-link i {
-    font-size: 1.1rem;
-    width: 20px;
-}
+/* Progress Bar */
+.progress { border-radius: 10px; background-color: #e9ecef; }

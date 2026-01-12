@@ -2,10 +2,13 @@ export function cargarSidebar(paginaActiva) {
     const sidebarHTML = `
     <div class="d-flex flex-column h-100 py-4 px-3" style="color: #ffffff;">
         <div class="mb-4 px-3">
-            <h5 class="fw-bold mb-0" style="color: #ffffff;">
-                <i class="fas fa-flask-vial me-2" style="color: #4f46e5;"></i>LAB TRACK
-            </h5>
-            <small style="color: #94a3b8; opacity: 0.8; font-size: 0.7rem;">SISTEMA DE GESTIÓN</small>
+            <div class="d-flex align-items-center mb-1">
+             
+                <h4 class="fw-bold mb-0" style="letter-spacing: 1px; color: #ffffff;">LAB TRACK</h4>
+            </div>
+            <p class="text-uppercase mb-0" style="color: #94a3b8; font-size: 0.65rem; font-weight: 700; letter-spacing: 2px;">
+                SISTEMA DE GESTIÓN
+            </p>
         </div>
         
         <nav class="nav flex-column gap-1">
@@ -36,7 +39,8 @@ export function cargarSidebar(paginaActiva) {
             </a>
         </nav>
 
-        <div class="mt-auto px-3 pt-4">
+        <div class="mt-auto px-3">
+            <div class="border-top border-white border-opacity-10 mb-3"></div>
             <a href="index.html" class="text-danger text-decoration-none small fw-bold d-flex align-items-center p-2 rounded-3 logout-link">
                 <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
             </a>
