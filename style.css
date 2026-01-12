@@ -10,41 +10,47 @@
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-/* --- ESTILOS BASE --- */
-body {
-    background-color: var(--bg-body);
-    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-    color: var(--text-main);
-    margin: 0;
-    overflow-x: hidden;
-}
-
-/* --- LAYOUT (ESTRUCTURA) --- */
+/* --- LAYOUT CORREGIDO --- */
 #sidebar-container {
     width: 280px;
     position: fixed;
+    top: 0;           /* Forzar a que empiece arriba del todo */
+    left: 0;          /* Forzar a que empiece a la izquierda */
     height: 100vh;
     z-index: 1100;
+    background: var(--sidebar-bg); /* Evita transparencias que muestren contenido debajo */
     transition: transform 0.3s ease;
 }
 
 .main {
-    margin-left: 280px;
+    margin-left: 280px; /* Desplazamiento lateral exacto al ancho de la sidebar */
+    margin-top: 0;      /* Evita que se desplace hacia abajo */
     padding: 2rem;
     min-height: 100vh;
-    transition: margin 0.3s ease;
+    width: calc(100% - 280px); /* Asegura que el contenido ocupe el resto de la pantalla */
+    transition: all 0.3s ease;
 }
 
-/* Header para móviles */
-.mobile-header {
-    display: none;
-    background: var(--sidebar-bg);
-    color: white;
-    padding: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 1050;
-    box-shadow: var(--shadow);
+/* --- AJUSTE RESPONSIVO PARA MÓVILES --- */
+@media (max-width: 992px) {
+    #sidebar-container {
+        transform: translateX(-100%);
+    }
+    
+    #sidebar-container.active {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;  /* En móvil el contenido ocupa todo el ancho */
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .mobile-header {
+        display: flex; /* Mostrar barra superior solo en móvil */
+        width: 100%;
+    }
 }
 
 /* --- COMPONENTES --- */
