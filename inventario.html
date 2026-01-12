@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario | Lab Track</title>
+    <title>Inventario Privado | Lab Track</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
+
 </head>
 <body class="bg-light">
 
@@ -18,15 +20,15 @@
             <header class="d-flex justify-content-between align-items-center mb-4 mt-4">
                 <div>
                     <h2 class="fw-bold text-dark m-0">Inventario de Laboratorio</h2>
-                    <p class="text-muted small m-0">Gestión de Reactivos y Fungibles</p>
+                    <p class="text-muted small m-0">Gestión exclusiva de sus reactivos y fungibles</p>
                 </div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm" onclick="document.getElementById('input-importar').click()">
-                        <i class="fas fa-file-upload me-2"></i>Importar CSV
+                        <i class="fas fa-file-upload me-2"></i>Importar
                     </button>
                     <input type="file" id="input-importar" accept=".csv" class="d-none">
                     <button class="btn btn-outline-success rounded-pill px-4 fw-bold shadow-sm" id="btn-exportar-csv">
-                        <i class="fas fa-file-download me-2"></i>Exportar CSV
+                        <i class="fas fa-file-download me-2"></i>Exportar
                     </button>
                     <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" onclick="abrirModalNuevo()">
                         <i class="fas fa-plus me-2"></i>Nuevo Registro
@@ -37,18 +39,18 @@
             <div class="card-premium border-0 shadow-sm mb-4 bg-white p-3 rounded-4">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-muted"></i></span>
-                    <input type="text" id="busqueda" class="form-control bg-transparent border-0" placeholder="Buscar material o lote...">
+                    <input type="text" id="busqueda" class="form-control bg-transparent border-0" placeholder="Buscar en mi inventario...">
                 </div>
             </div>
 
             <ul class="nav nav-pills mb-4 bg-white p-2 rounded-pill shadow-sm d-inline-flex">
                 <li class="nav-item">
-                    <button class="nav-link active rounded-pill px-4 fw-bold" id="tab-reactivos" data-bs-toggle="pill" data-bs-target="#content-main" onclick="setTipoActual('reactivo')">
+                    <button class="nav-link active rounded-pill px-4 fw-bold" id="tab-reactivos" onclick="setTipoActual('reactivo')">
                         <i class="fas fa-vial me-2"></i>Reactivos
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link rounded-pill px-4 fw-bold" id="tab-fungibles" data-bs-toggle="pill" data-bs-target="#content-main" onclick="setTipoActual('fungible')">
+                    <button class="nav-link rounded-pill px-4 fw-bold" id="tab-fungibles" onclick="setTipoActual('fungible')">
                         <i class="fas fa-box-tissue me-2"></i>Fungibles
                     </button>
                 </li>
@@ -60,13 +62,15 @@
                         <thead class="bg-light text-muted small fw-bold text-uppercase">
                             <tr id="encabezados-tabla"></tr>
                         </thead>
-                        <tbody id="lista-materiales"></tbody>
+                        <tbody id="lista-materiales">
+                            <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center p-4">
-                <div class="text-muted small">Total: <span id="pag-total" class="fw-bold">0</span></div>
+                <div class="text-muted small">Mostrando: <span id="pag-total" class="fw-bold">0</span> artículos</div>
                 <nav><ul class="pagination pagination-sm m-0 gap-1" id="controles-paginacion"></ul></nav>
             </div>
         </div>
@@ -77,14 +81,14 @@
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <form id="form-articulo">
                     <div class="modal-header border-0 px-4 pt-4">
-                        <h5 class="fw-bold m-0 text-primary">Ficha de Producto</h5>
+                        <h5 class="fw-bold m-0 text-primary"><i class="fas fa-edit me-2"></i>Ficha de Producto</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body p-4">
                         <input type="hidden" id="art-id">
                         <div class="row g-3">
                             <div class="col-md-8">
-                                <label class="form-label small fw-bold">Nombre</label>
+                                <label class="form-label small fw-bold">Nombre del Material</label>
                                 <input type="text" id="art-nombre" class="form-control bg-light border-0" required>
                             </div>
                             <div class="col-md-4">
@@ -95,37 +99,37 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Marca</label>
+                                <label class="form-label small fw-bold">Marca / Proveedor</label>
                                 <input type="text" id="art-marca" class="form-control bg-light border-0">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Stock</label>
+                                <label class="form-label small fw-bold">Stock Actual</label>
                                 <input type="number" id="art-stock" class="form-control bg-light border-0" required>
                             </div>
                             <div class="col-md-6 campo-reactivo">
-                                <label class="form-label small fw-bold text-primary">Riqueza</label>
+                                <label class="form-label small fw-bold text-primary">Riqueza (%)</label>
                                 <input type="text" id="art-riqueza" class="form-control bg-primary-subtle border-0">
                             </div>
                             <div class="col-md-6 campo-reactivo">
-                                <label class="form-label small fw-bold text-primary">Molaridad</label>
+                                <label class="form-label small fw-bold text-primary">Molaridad (M)</label>
                                 <input type="text" id="art-molaridad" class="form-control bg-primary-subtle border-0">
                             </div>
                             <div class="col-md-12 campo-fungible d-none">
-                                <label class="form-label small fw-bold text-info">Capacidad</label>
+                                <label class="form-label small fw-bold text-info">Capacidad / Tamaño</label>
                                 <input type="text" id="art-capacidad" class="form-control bg-info-subtle border-0">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Lote</label>
+                                <label class="form-label small fw-bold">Número de Lote</label>
                                 <input type="text" id="art-lote" class="form-control bg-light border-0">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Caducidad</label>
+                                <label class="form-label small fw-bold">Fecha de Caducidad</label>
                                 <input type="date" id="art-caducidad" class="form-control bg-light border-0">
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 p-4 pt-0">
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">Confirmar y Guardar</button>
                     </div>
                 </form>
             </div>
@@ -133,16 +137,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script type="module">
         import { cargarSidebar } from './sidebar.js';
         import { descargarCSV } from './exportador-csv.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        cargarSidebar('inventario');
-        const firebaseConfig = { apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", authDomain: "labmanager-b85b1.firebaseapp.com", projectId: "labmanager-b85b1", appId: "1:651630503448:web:9a327cbf30b84fd763c56d" };
+        // Configuración Firebase
+        const firebaseConfig = { 
+            apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", 
+            authDomain: "labmanager-b85b1.firebaseapp.com", 
+            projectId: "labmanager-b85b1", 
+            appId: "1:651630503448:web:9a327cbf30b84fd763c56d" 
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
         const modalArt = new bootstrap.Modal(document.getElementById('modalArticulo'));
 
         let datosGlobales = [];
@@ -150,112 +162,105 @@
         window.paginaActual = 1;
         const registrosPorPagina = 10;
 
-        // Función para cambiar página (necesaria en global para el onclick)
-        window.cambiarPagina = (p) => {
-            window.paginaActual = p;
-            renderizar();
-        };
+        cargarSidebar('inventario');
+
+        // --- LÓGICA DE PROTECCIÓN POR ADMIN ID ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Escucha activa solo de los documentos del administrador logeado
+                const q = query(collection(db, "inventario"), where("adminId", "==", user.uid));
+                
+                onSnapshot(q, (snapshot) => {
+                    datosGlobales = [];
+                    snapshot.forEach(d => datosGlobales.push({id: d.id, ...d.data()}));
+                    renderizar();
+                });
+            } else {
+                window.location.href = "login.html";
+            }
+        });
 
         window.setTipoActual = (t) => {
             window.tipoActual = t;
             window.paginaActual = 1;
+            // Actualizar UI de los botones
+            document.getElementById('tab-reactivos').classList.toggle('active', t === 'reactivo');
+            document.getElementById('tab-fungibles').classList.toggle('active', t === 'fungible');
             renderizar();
         };
 
         function renderizar() {
-            const query = document.getElementById('busqueda').value.toLowerCase();
-            const filtrados = datosGlobales.filter(i => i.tipo === window.tipoActual && (i.nombre.toLowerCase().includes(query) || (i.lote || "").toLowerCase().includes(query)));
+            const busqueda = document.getElementById('busqueda').value.toLowerCase();
+            const filtrados = datosGlobales.filter(i => 
+                i.tipo === window.tipoActual && 
+                (i.nombre.toLowerCase().includes(busqueda) || (i.lote || "").toLowerCase().includes(busqueda))
+            );
             
+            // Render de Cabeceras
             const header = document.getElementById('encabezados-tabla');
             header.innerHTML = `
-                <th class="ps-4">Producto</th>
+                <th class="ps-4">Producto / Marca</th>
                 <th>Stock</th>
                 ${window.tipoActual === 'reactivo' ? '<th>Riqueza</th><th>Molaridad</th>' : '<th>Capacidad</th>'}
                 <th>Lote / Caducidad</th>
                 <th class="text-end pe-4">Acciones</th>
             `;
 
-            const total = filtrados.length;
             const items = filtrados.slice((window.paginaActual - 1) * registrosPorPagina, window.paginaActual * registrosPorPagina);
             const tbody = document.getElementById('lista-materiales');
-            tbody.innerHTML = "";
+            tbody.innerHTML = filtrados.length === 0 ? '<tr><td colspan="6" class="text-center py-4 text-muted">No se encontraron artículos</td></tr>' : "";
 
             items.forEach(item => {
-                const hoy = new Date();
-                const esCaducado = item.caducidad && new Date(item.caducidad) < hoy;
+                const esCaducado = item.caducidad && new Date(item.caducidad) < new Date();
                 tbody.innerHTML += `
                     <tr>
-                        <td class="ps-4"><strong>${item.nombre}</strong><br><small class="text-muted">${item.marca_fabricante || 'N/A'}</small></td>
-                        <td><span class="badge bg-light text-dark border">${item.cantidad_unidades || 0}</span></td>
-                        ${window.tipoActual === 'reactivo' ? `<td>${item.riqueza || '-'}</td><td>${item.molaridad || '-'}</td>` : `<td>${item.capacidad || '-'}</td>`}
-                        <td><small>L: ${item.lote || '-'}</small><br><small class="${esCaducado ? 'text-danger fw-bold' : ''}">F: ${item.caducidad || 'S/F'}</small></td>
+                        <td class="ps-4">
+                            <span class="fw-bold text-dark">${item.nombre}</span><br>
+                            <span class="text-muted small">${item.marca_fabricante || 'Sin marca'}</span>
+                        </td>
+                        <td><span class="badge bg-light text-primary border border-primary-subtle px-3">${item.cantidad_unidades || 0}</span></td>
+                        ${window.tipoActual === 'reactivo' ? 
+                            `<td>${item.riqueza || '-'}</td><td>${item.molaridad || '-'}</td>` : 
+                            `<td>${item.capacidad || '-'}</td>`}
+                        <td>
+                            <div class="small">L: ${item.lote || '-'}</div>
+                            <div class="small ${esCaducado ? 'text-danger fw-bold' : 'text-muted'}">F: ${item.caducidad || 'S/F'}</div>
+                        </td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-light text-primary rounded-circle mx-1" onclick="editarItem('${item.id}')"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-sm btn-light text-danger rounded-circle" onclick="eliminarItem('${item.id}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-light text-primary rounded-circle shadow-sm mx-1" onclick="editarItem('${item.id}')"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="eliminarItem('${item.id}')"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
-            actualizarPag(total);
+            actualizarPag(filtrados.length);
         }
 
-        function actualizarPag(t) {
-            document.getElementById('pag-total').innerText = t;
-            const paginasTotales = Math.ceil(t / registrosPorPagina);
-            const nav = document.getElementById('controles-paginacion');
-            nav.innerHTML = "";
-            
-            if(paginasTotales <= 1) return;
-
-            for(let i = 1; i <= paginasTotales; i++) {
-                nav.innerHTML += `
-                    <li class="page-item ${i === window.paginaActual ? 'active' : ''}">
-                        <a class="page-link shadow-sm border-0 rounded mx-1" href="javascript:void(0)" onclick="window.cambiarPagina(${i})">${i}</a>
-                    </li>`;
-            }
-        }
-
-        // Importación CSV
-        document.getElementById('input-importar').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                const lines = event.target.result.split('\n');
-                let count = 0;
-                for(let i=1; i<lines.length; i++) {
-                    const col = lines[i].split(',');
-                    if(col.length < 2) continue;
-                    await addDoc(collection(db, "inventario"), {
-                        tipo: col[0].trim().toLowerCase(),
-                        nombre: col[1].trim(),
-                        marca_fabricante: col[2].trim(),
-                        cantidad_unidades: Number(col[3]) || 0,
-                        caducidad: col[4].trim(),
-                        lote: col[5].trim(),
-                        riqueza: col[6]?.trim() || "",
-                        molaridad: col[7]?.trim() || "",
-                        capacidad: col[8]?.trim() || ""
-                    });
-                    count++;
-                }
-                alert(`Importados ${count} registros.`);
-                e.target.value = '';
+        // --- CRUD OPERACIONES ---
+        document.getElementById('form-articulo').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('art-id').value;
+            const data = {
+                adminId: auth.currentUser.uid, // SELLO DE PROPIEDAD
+                nombre: document.getElementById('art-nombre').value,
+                tipo: document.getElementById('art-tipo').value,
+                marca_fabricante: document.getElementById('art-marca').value,
+                cantidad_unidades: Number(document.getElementById('art-stock').value),
+                riqueza: document.getElementById('art-riqueza').value,
+                molaridad: document.getElementById('art-molaridad').value,
+                capacidad: document.getElementById('art-capacidad').value,
+                lote: document.getElementById('art-lote').value,
+                caducidad: document.getElementById('art-caducidad').value
             };
-            reader.readAsText(file);
-        });
 
-        document.getElementById('btn-exportar-csv').onclick = () => {
-            const map = datosGlobales.map(i => ({ Tipo: i.tipo, Nombre: i.nombre, Marca: i.marca_fabricante, Stock: i.cantidad_unidades, Caducidad: i.caducidad, Lote: i.lote, Riqueza: i.riqueza, Molaridad: i.molaridad, Capacidad: i.capacidad }));
-            descargarCSV(map, "Inventario_LabTrack");
+            try {
+                id ? await updateDoc(doc(db, "inventario", id), data) : await addDoc(collection(db, "inventario"), data);
+                modalArt.hide();
+            } catch (err) { alert("Error al guardar: " + err.message); }
         };
 
-        window.toggleCamposModal = () => {
-            const t = document.getElementById('art-tipo').value;
-            document.querySelectorAll('.campo-reactivo').forEach(e => e.classList.toggle('d-none', t !== 'reactivo'));
-            document.querySelectorAll('.campo-fungible').forEach(e => e.classList.toggle('d-none', t !== 'fungible'));
+        window.eliminarItem = async (id) => { 
+            if(confirm("¿Estás seguro de eliminar este artículo del inventario?")) await deleteDoc(doc(db, "inventario", id)); 
         };
-
-        window.abrirModalNuevo = () => { document.getElementById('form-articulo').reset(); document.getElementById('art-id').value=""; window.toggleCamposModal(); modalArt.show(); };
 
         window.editarItem = async (id) => {
             const d = await getDoc(doc(db, "inventario", id));
@@ -274,33 +279,68 @@
             modalArt.show();
         };
 
-        document.getElementById('form-articulo').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('art-id').value;
-            const data = {
-                nombre: document.getElementById('art-nombre').value,
-                tipo: document.getElementById('art-tipo').value,
-                marca_fabricante: document.getElementById('art-marca').value,
-                cantidad_unidades: Number(document.getElementById('art-stock').value),
-                riqueza: document.getElementById('art-riqueza').value,
-                molaridad: document.getElementById('art-molaridad').value,
-                capacidad: document.getElementById('art-capacidad').value,
-                lote: document.getElementById('art-lote').value,
-                caducidad: document.getElementById('art-caducidad').value
+        // --- IMPORTACIÓN / EXPORTACIÓN ---
+        document.getElementById('input-importar').onchange = async (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const lineas = ev.target.result.split('\n');
+                for(let i=1; i<lineas.length; i++) {
+                    const c = lineas[i].split(',');
+                    if(c.length < 2) continue;
+                    await addDoc(collection(db, "inventario"), {
+                        adminId: auth.currentUser.uid,
+                        tipo: c[0].trim().toLowerCase(),
+                        nombre: c[1].trim(),
+                        marca_fabricante: c[2].trim(),
+                        cantidad_unidades: Number(c[3]) || 0,
+                        caducidad: c[4].trim(),
+                        lote: c[5].trim(),
+                        riqueza: c[6]?.trim() || "",
+                        molaridad: c[7]?.trim() || "",
+                        capacidad: c[8]?.trim() || ""
+                    });
+                }
+                alert("Importación finalizada correctamente.");
             };
-            id ? await updateDoc(doc(db, "inventario", id), data) : await addDoc(collection(db, "inventario"), data);
-            modalArt.hide();
+            reader.readAsText(file);
         };
 
-        window.eliminarItem = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "inventario", id)); };
+        document.getElementById('btn-exportar-csv').onclick = () => {
+            const dataMap = datosGlobales.map(i => ({ 
+                Tipo: i.tipo, Producto: i.nombre, Marca: i.marca_fabricante, Stock: i.cantidad_unidades, 
+                Caducidad: i.caducidad, Lote: i.lote, Riqueza: i.riqueza, Molaridad: i.molaridad, Capacidad: i.capacidad 
+            }));
+            descargarCSV(dataMap, "Mi_Inventario_LabTrack");
+        };
 
+        // --- AUXILIARES UI ---
+        window.toggleCamposModal = () => {
+            const t = document.getElementById('art-tipo').value;
+            document.querySelectorAll('.campo-reactivo').forEach(e => e.classList.toggle('d-none', t !== 'reactivo'));
+            document.querySelectorAll('.campo-fungible').forEach(e => e.classList.toggle('d-none', t !== 'fungible'));
+        };
+
+        window.abrirModalNuevo = () => { 
+            document.getElementById('form-articulo').reset(); 
+            document.getElementById('art-id').value=""; 
+            window.toggleCamposModal(); 
+            modalArt.show(); 
+        };
+
+        function actualizarPag(total) {
+            document.getElementById('pag-total').innerText = total;
+            const paginas = Math.ceil(total / registrosPorPagina);
+            const nav = document.getElementById('controles-paginacion');
+            nav.innerHTML = "";
+            for(let i=1; i<=paginas; i++) {
+                nav.innerHTML += `<li class="page-item ${i === window.paginaActual ? 'active' : ''}">
+                    <a class="page-link border-0 rounded mx-1 shadow-sm" href="#" onclick="cambiarPagina(${i})">${i}</a></li>`;
+            }
+        }
+
+        window.cambiarPagina = (p) => { window.paginaActual = p; renderizar(); };
         document.getElementById('busqueda').oninput = () => { window.paginaActual = 1; renderizar(); };
-        
-        onSnapshot(collection(db, "inventario"), s => { 
-            datosGlobales = []; 
-            s.forEach(d => datosGlobales.push({id:d.id, ...d.data()})); 
-            renderizar(); 
-        });
 
     </script>
 </body>

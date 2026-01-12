@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
+
 </head>
 <body class="bg-light">
 
@@ -18,7 +20,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h2 class="fw-bold text-dark m-0">Administración de Usuarios</h2>
-                        <p class="text-muted small m-0">Asigna roles y laboratorios específicos a tu equipo.</p>
+                        <p class="text-muted small m-0">Gestión privada de tu personal y colaboradores.</p>
                     </div>
                     <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="abrirModalNuevoUsuario()">
                         <i class="fas fa-user-plus me-2"></i>Añadir Usuario
@@ -29,7 +31,7 @@
                     <div class="col-md-8">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" id="busqueda-usuario" class="form-control bg-light border-0" placeholder="Buscar por nombre o email...">
+                            <input type="text" id="busqueda-usuario" class="form-control bg-light border-0" placeholder="Buscar en mi equipo...">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -49,7 +51,7 @@
                         <thead class="bg-light text-muted small fw-bold text-uppercase">
                             <tr>
                                 <th class="ps-4">Usuario</th>
-                                <th>Rol Actual</th>
+                                <th>Rol</th>
                                 <th>Laboratorio Asignado</th>
                                 <th class="text-end pe-4">Acciones</th>
                             </tr>
@@ -122,28 +124,45 @@
     <script type="module">
         import { cargarSidebar } from './sidebar.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         cargarSidebar('usuarios');
 
         const firebaseConfig = { apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", authDomain: "labmanager-b85b1.firebaseapp.com", projectId: "labmanager-b85b1", appId: "1:651630503448:web:9a327cbf30b84fd763c56d" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
+        let currentAdminId = null;
         let todosLosUsuarios = [];
         let listaLaboratorios = [];
 
-        // 1. ESCUCHAR LABORATORIOS
-        onSnapshot(collection(db, "laboratorios"), (snap) => {
-            listaLaboratorios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            aplicarFiltros(); // Re-renderizar cuando cambien los labs
+        // --- RESTRICCIÓN ATÓMICA: VERIFICAR SESIÓN Y CARGAR ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentAdminId = user.uid;
+                iniciarListeners();
+            } else {
+                window.location.href = 'login.html';
+            }
         });
 
-        // 2. ESCUCHAR USUARIOS
-        onSnapshot(collection(db, "usuarios"), (snap) => {
-            todosLosUsuarios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            aplicarFiltros();
-        });
+        function iniciarListeners() {
+            // 1. ESCUCHAR SOLO MIS LABORATORIOS
+            const qLabs = query(collection(db, "laboratorios"), where("adminId", "==", currentAdminId));
+            onSnapshot(qLabs, (snap) => {
+                listaLaboratorios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                aplicarFiltros();
+            });
+
+            // 2. ESCUCHAR SOLO MIS USUARIOS
+            const qUsers = query(collection(db, "usuarios"), where("adminId", "==", currentAdminId));
+            onSnapshot(qUsers, (snap) => {
+                todosLosUsuarios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                aplicarFiltros();
+            });
+        }
 
         const aplicarFiltros = () => {
             const texto = document.getElementById('busqueda-usuario').value.toLowerCase();
@@ -162,7 +181,6 @@
             usuarios.forEach(u => {
                 const rolColor = u.rol === 'Supervisor' ? 'bg-danger' : (u.rol === 'tecnico' ? 'bg-primary' : 'bg-secondary');
                 
-                // Construir Select de Laboratorios
                 let selectLabs = `<select class="form-select form-select-sm border-0 bg-light rounded-3" onchange="asignarLab('${u.id}', this.value)">
                                     <option value="">Sin asignar</option>`;
                 listaLaboratorios.forEach(lab => {
@@ -194,12 +212,11 @@
             });
         };
 
-        // --- FUNCIONES GLOBALES ---
+        // --- FUNCIONES GLOBALES CON RESTRICCIÓN ---
         window.asignarLab = async (userId, labId) => {
             try {
                 await updateDoc(doc(db, "usuarios", userId), { laboratorioId: labId });
-                console.log("Laboratorio actualizado");
-            } catch (e) { alert("Error al asignar laboratorio"); }
+            } catch (e) { console.error(e); }
         };
 
         window.abrirModalNuevoUsuario = () => {
@@ -209,11 +226,14 @@
 
         document.getElementById('form-nuevo-usuario').onsubmit = async (e) => {
             e.preventDefault();
+            if(!currentAdminId) return;
+
             await addDoc(collection(db, "usuarios"), {
                 nombre: document.getElementById('nuevo-nombre').value,
                 email: document.getElementById('nuevo-email').value,
                 rol: document.getElementById('nuevo-rol').value,
-                laboratorioId: "", // Inicialmente vacío
+                laboratorioId: "",
+                adminId: currentAdminId, // <--- RESTRICCIÓN ATÓMICA: El dueño
                 fechaCreacion: new Date().toISOString()
             });
             bootstrap.Modal.getInstance(document.getElementById('modalNuevoUsuario')).hide();

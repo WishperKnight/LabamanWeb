@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sedes y Laboratorios | Lab Track</title>
+    <title>Laboratorios | Lab Track</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-</head>
+    <style>
+        .card-premium { border-radius: 1.2rem; background: white; transition: 0.3s; }
+        .card-premium:hover { transform: translateY(-5px); }
+        .icon-box-lg { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .modal-content { border-radius: 1.5rem; border: none; }
+    </style>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
 
-<body>
+</head>
+<body class="bg-light">
 
     <div id="sidebar-container"></div>
 
     <div class="main">
-        <div class="container-fluid">
-            <header class="d-flex justify-content-between align-items-center mb-5">
+        <div class="container-fluid py-4">
+            
+            <header class="d-flex justify-content-between align-items-center mb-5 mt-2">
                 <div>
-                    <h2 class="fw-bold text-dark m-0">Sedes y Laboratorios</h2>
-                    <p class="text-muted small m-0">Gestión de responsables, capacidad y activos.</p>
+                    <h2 class="fw-bold text-dark m-0">Unidades de Laboratorio</h2>
+                    <p class="text-muted small m-0">Gestión de sedes, responsables y capacidad.</p>
                 </div>
                 <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="abrirModalCrear()">
-                    <i class="fas fa-plus me-2"></i>Nueva Sede
+                    <i class="fas fa-plus me-2"></i>Nueva Unidad
                 </button>
             </header>
 
@@ -31,9 +38,9 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalLab" tabindex="-1">
+    <div class="modal fade" id="modalLab" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-content shadow-lg">
                 <div class="modal-header border-0 px-4 pt-4">
                     <h5 class="fw-bold m-0 text-primary" id="modal-titulo">Registrar Unidad</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -41,26 +48,23 @@
                 <form id="form-lab">
                     <input type="hidden" id="lab-id">
                     <div class="modal-body p-4">
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Nombre del Laboratorio</label>
-                            <input type="text" id="lab-nombre" class="form-control rounded-3 bg-light border-0" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Responsable / Encargado (Supervisor)</label>
-                            <select id="lab-responsable" class="form-select rounded-3 bg-light border-0" required>
-                                <option value="" disabled selected>Cargando supervisores...</option>
-                            </select>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small fw-bold">Ubicación</label>
-                                <input type="text" id="lab-ubicacion" class="form-control rounded-3 bg-light border-0" required>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Nombre del Laboratorio</label>
+                                <input type="text" id="lab-nombre" class="form-control bg-light border-0" placeholder="Ej: Laboratorio de Química" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small fw-bold">Capacidad Máx.</label>
-                                <input type="number" id="lab-capacidad" class="form-control rounded-3 bg-light border-0" required>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Responsable (Supervisor)</label>
+                                <select id="lab-responsable" class="form-select bg-light border-0" required>
+                                    </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold">Ubicación / Sede</label>
+                                <input type="text" id="lab-ubicacion" class="form-control bg-light border-0" placeholder="Ej: Planta 2, Edificio A">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Cupo Máximo</label>
+                                <input type="number" id="lab-capacidad" class="form-control bg-light border-0" value="20">
                             </div>
                         </div>
                     </div>
@@ -72,24 +76,25 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalVerEquipos" tabindex="-1">
+    <div class="modal fade" id="modalVerEquipos" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-content shadow-lg">
                 <div class="modal-header border-0 px-4 pt-4">
-                    <h5 class="fw-bold m-0" id="modal-lab-titulo">Inventario de Sede</h5>
+                    <h5 class="fw-bold m-0 text-dark">Inventario en esta sede</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-0">
                     <div class="table-responsive">
                         <table class="table align-middle mb-0">
-                            <thead class="bg-light small">
+                            <thead class="bg-light small fw-bold text-uppercase">
                                 <tr>
-                                    <th class="ps-4">EQUIPO</th>
-                                    <th>ESTADO</th>
-                                    <th class="pe-4 text-end">SERIAL</th>
+                                    <th class="ps-4 py-3">Equipo</th>
+                                    <th>Estado</th>
+                                    <th class="pe-4 text-end">Serial</th>
                                 </tr>
                             </thead>
-                            <tbody id="lista-equipos-lab"></tbody>
+                            <tbody id="lista-equipos-lab">
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -98,12 +103,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script type="module">
         import { cargarSidebar } from './sidebar.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        cargarSidebar('laboratorios');
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA",
@@ -114,83 +119,56 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // --- CARGAR SUPERVISORES EN EL SELECT ---
+        // Inicialización única de modales para evitar bloqueos de pantalla
+        const elModalLab = document.getElementById('modalLab');
+        const modalLab = new bootstrap.Modal(elModalLab);
+        
+        const elModalVerEq = document.getElementById('modalVerEquipos');
+        const modalVerEq = new bootstrap.Modal(elModalVerEq);
+
+        cargarSidebar('laboratorios');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const q = query(collection(db, "laboratorios"), where("adminId", "==", user.uid));
+                onSnapshot(q, (snap) => {
+                    renderizarLaboratorios(snap);
+                });
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
         const cargarSupervisores = async () => {
             const selectResp = document.getElementById('lab-responsable');
+            const user = auth.currentUser;
+            if (!user) return;
+
             try {
-                const q = query(collection(db, "usuarios"), where("rol", "==", "Supervisor"));
+                const q = query(
+                    collection(db, "usuarios"), 
+                    where("rol", "==", "Supervisor"),
+                    where("adminId", "==", user.uid) 
+                );
                 const snap = await getDocs(q);
                 
                 selectResp.innerHTML = '<option value="" disabled selected>Seleccione un supervisor...</option>';
-                
                 snap.forEach(d => {
-                    const user = d.data();
-                    const option = document.createElement('option');
-                    option.value = user.nombre;
-                    option.textContent = user.nombre;
-                    selectResp.appendChild(option);
+                    const u = d.data();
+                    selectResp.innerHTML += `<option value="${u.nombre}">${u.nombre}</option>`;
                 });
             } catch (error) {
-                console.error("Error cargando supervisores:", error);
-                selectResp.innerHTML = '<option value="">Error al cargar supervisores</option>';
+                console.error("Error supervisores:", error);
             }
         };
 
-        // --- FUNCIONES DE MODAL ---
-        window.abrirModalCrear = async () => {
-            document.getElementById('form-lab').reset();
-            document.getElementById('lab-id').value = "";
-            document.getElementById('modal-titulo').innerText = "Registrar Nueva Unidad";
-            await cargarSupervisores();
-            new bootstrap.Modal(document.getElementById('modalLab')).show();
-        };
-
-        window.abrirModalEditar = async (id, nombre, responsableActual, ubicacion, capacidad) => {
-            document.getElementById('lab-id').value = id;
-            document.getElementById('lab-nombre').value = nombre;
-            document.getElementById('lab-ubicacion').value = ubicacion;
-            document.getElementById('lab-capacidad').value = capacidad;
-            document.getElementById('modal-titulo').innerText = "Modificar Laboratorio";
-            
-            await cargarSupervisores();
-            // Selecciona el responsable actual en el spinner
-            document.getElementById('lab-responsable').value = responsableActual;
-            
-            new bootstrap.Modal(document.getElementById('modalLab')).show();
-        };
-
-        window.eliminarLaboratorio = async (id, nombre) => {
-            if (confirm(`¿Estás seguro de que deseas eliminar "${nombre}"? Esta acción borrará la sede permanentemente.`)) {
-                try {
-                    await deleteDoc(doc(db, "laboratorios", id));
-                } catch (err) {
-                    alert("Error: " + err.message);
-                }
-            }
-        };
-
-        window.verEquiposDelLab = async (nombreLab) => {
-            document.getElementById('modal-lab-titulo').innerText = `Inventario: ${nombreLab}`;
-            const cont = document.getElementById('lista-equipos-lab');
-            cont.innerHTML = `<tr><td colspan="3" class="text-center p-4">Cargando activos...</td></tr>`;
-            new bootstrap.Modal(document.getElementById('modalVerEquipos')).show();
-
-            const q = query(collection(db, "equipos"), where("laboratorio", "==", nombreLab));
-            const snap = await getDocs(q);
-            cont.innerHTML = snap.empty ? `<tr><td colspan="3" class="text-center p-4">No hay equipos registrados.</td></tr>` : "";
-            snap.forEach(d => {
-                const e = d.data();
-                cont.innerHTML += `<tr><td class="ps-4"><b>${e.nombre}</b></td><td><span class="badge bg-light text-dark border">${e.estado}</span></td><td class="pe-4 text-end small text-muted">${e.serial || 'S/N'}</td></tr>`;
-            });
-        };
-
-        // --- RENDERIZADO EN TIEMPO REAL ---
-        onSnapshot(collection(db, "laboratorios"), (snap) => {
+        async function renderizarLaboratorios(snap) {
             const cont = document.getElementById('contenedor-laboratorios');
             cont.innerHTML = "";
 
-            snap.forEach(async (d) => {
+            for (const d of snap.docs) {
                 const lab = d.data();
                 const id = d.id;
                 const responsable = lab.responsable || "Sin asignar";
@@ -203,15 +181,15 @@
                             <div class="icon-box-lg bg-primary-subtle text-primary"><i class="fas fa-building"></i></div>
                             <div class="d-flex gap-2">
                                 <button onclick="abrirModalEditar('${id}','${lab.nombre}','${responsable}','${lab.ubicacion}','${lab.capacidad}')" class="btn btn-sm btn-light rounded-circle shadow-sm">
-                                    <i class="fas fa-pen text-primary" style="font-size: 0.8rem;"></i>
+                                    <i class="fas fa-pen text-primary"></i>
                                 </button>
                                 <button onclick="eliminarLaboratorio('${id}','${lab.nombre}')" class="btn btn-sm btn-light rounded-circle shadow-sm">
-                                    <i class="fas fa-trash text-danger" style="font-size: 0.8rem;"></i>
+                                    <i class="fas fa-trash text-danger"></i>
                                 </button>
                             </div>
                         </div>
                         <h5 class="fw-bold mb-1 text-dark">${lab.nombre}</h5>
-                        <p class="text-muted small mb-3"><i class="fas fa-user-shield me-1 text-primary"></i> Resp: <b>${responsable}</b></p>
+                        <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1 text-primary"></i> ${lab.ubicacion || 'Sede principal'}</p>
                         
                         <div class="bg-light rounded-4 p-3 d-flex justify-content-around mb-4 border border-white">
                             <div class="text-center">
@@ -230,35 +208,90 @@
                     </div>`;
                 cont.appendChild(col);
 
-                // Contador de equipos dinámico
-                const qE = query(collection(db, "equipos"), where("laboratorio", "==", lab.nombre));
+                // Contador de equipos en tiempo real
+                const qE = query(
+                    collection(db, "equipos"), 
+                    where("laboratorio", "==", lab.nombre),
+                    where("adminId", "==", auth.currentUser.uid)
+                );
                 const snapE = await getDocs(qE);
                 const el = document.getElementById(`count-${id}`);
                 if(el) el.innerText = snapE.size;
-            });
-        });
+            }
+        }
 
-        // --- GUARDAR O ACTUALIZAR ---
         document.getElementById('form-lab').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('lab-id').value;
+            const user = auth.currentUser;
+
             const datos = {
+                adminId: user.uid,
                 nombre: document.getElementById('lab-nombre').value,
                 responsable: document.getElementById('lab-responsable').value,
                 ubicacion: document.getElementById('lab-ubicacion').value,
-                capacidad: document.getElementById('lab-capacidad').value
+                capacidad: document.getElementById('lab-capacidad').value,
+                fechaModificacion: new Date().toISOString()
             };
 
             try {
                 if (id) {
                     await updateDoc(doc(db, "laboratorios", id), datos);
                 } else {
-                    await addDoc(collection(db, "laboratorios"), { ...datos, fecha: new Date().toISOString() });
+                    await addDoc(collection(db, "laboratorios"), datos);
                 }
-                bootstrap.Modal.getInstance(document.getElementById('modalLab')).hide();
+                modalLab.hide();
             } catch (err) {
                 alert("Error al guardar: " + err.message);
             }
+        };
+
+        window.abrirModalCrear = async () => {
+            document.getElementById('form-lab').reset();
+            document.getElementById('lab-id').value = "";
+            document.getElementById('modal-titulo').innerText = "Registrar Nueva Unidad";
+            await cargarSupervisores();
+            modalLab.show();
+        };
+
+        window.abrirModalEditar = async (id, nombre, resp, ubica, cap) => {
+            document.getElementById('lab-id').value = id;
+            document.getElementById('lab-nombre').value = nombre;
+            document.getElementById('lab-ubicacion').value = ubica;
+            document.getElementById('lab-capacidad').value = cap;
+            document.getElementById('modal-titulo').innerText = "Modificar Laboratorio";
+            await cargarSupervisores();
+            document.getElementById('lab-responsable').value = resp;
+            modalLab.show();
+        };
+
+        window.eliminarLaboratorio = async (id, nombre) => {
+            if (confirm(`¿Eliminar permanentemente "${nombre}"?`)) {
+                await deleteDoc(doc(db, "laboratorios", id));
+            }
+        };
+
+        window.verEquiposDelLab = async (nombreLab) => {
+            const cont = document.getElementById('lista-equipos-lab');
+            cont.innerHTML = `<tr><td colspan="3" class="text-center p-4">Cargando...</td></tr>`;
+            modalVerEq.show();
+
+            const q = query(
+                collection(db, "equipos"), 
+                where("laboratorio", "==", nombreLab),
+                where("adminId", "==", auth.currentUser.uid)
+            );
+            const snap = await getDocs(q);
+            cont.innerHTML = snap.empty ? `<tr><td colspan="3" class="text-center p-4 text-muted">No hay activos vinculados.</td></tr>` : "";
+            snap.forEach(d => {
+                const e = d.data();
+                cont.innerHTML += `
+                    <tr>
+                        <td class="ps-4"><b>${e.nombre}</b></td>
+                        <td><span class="badge bg-light text-dark border">${e.estado}</span></td>
+                        <td class="pe-4 text-end small text-muted">${e.serial || 'S/N'}</td>
+                    </tr>`;
+            });
         };
     </script>
 </body>

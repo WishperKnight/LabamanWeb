@@ -1,88 +1,109 @@
-import { collection, doc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// IMPORTANTE: Solo importamos lo que necesitamos de cada librería
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, doc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /**
- * Procesa un archivo CSV y lo sube a la colección correspondiente de Firebase
+ * Procesa un archivo CSV y lo sube a Firebase vinculándolo al Admin logeado
  */
 export async function importarCSV(file, db, coleccionDestino) {
     return new Promise((resolve, reject) => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) return reject("Sesión no válida para importar.");
+
         const reader = new FileReader();
 
         reader.onload = async (event) => {
             try {
                 const contenido = event.target.result;
                 const lineas = contenido.split('\n').filter(linea => linea.trim() !== "");
-                const batch = writeBatch(db);
-                let contador = 0;
 
-                // Empezamos en i=1 para saltar la cabecera
+                let batch = writeBatch(db);
+                let contadorGlobal = 0;
+                let contadorBatch = 0;
+
+                // Empezamos en i = 1 para saltar la cabecera
                 for (let i = 1; i < lineas.length; i++) {
-                    const col = lineas[i].split(',').map(c => c.trim());
-                    
-                    if (col.length >= 4) {
-                        const ref = doc(collection(db, coleccionDestino));
-                        let datos = {};
+                    const col = lineas[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
 
-                        if (coleccionDestino === "inventario") {
-                            // Estructura para MATERIALES (PDF páginas 2-4)
+                    // Validamos que la línea tenga datos (mínimo nombre y serial)
+                    if (col.length >= 2) {
+                        const ref = doc(collection(db, coleccionDestino));
+                        let datos = { adminId: user.uid };
+
+                        if (coleccionDestino === "equipos") {
                             datos = {
-                                nombre: col[0],
-                                tipo: col[1].toLowerCase(),
-                                cantidad: parseInt(col[2]) || 0,
-                                capacidadTotal: parseInt(col[3]) || 0,
-                                laboratorio: col[4] || "General",
-                                lote: col[5] || "N/A",
-                                caducidad: col[6] || "N/A",
-                                marca: col[7] || "N/A",
-                                fechaRegistro: new Date().toISOString()
-                            };
-                        } else if (coleccionDestino === "equipos") {
-                            // Estructura para EQUIPOS (PDF página 1)
-                            datos = {
-                                nombre: col[0],
-                                serial: col[1] || "S/N",
-                                fabricante: col[2] || "Desconocido",
-                                tipo: col[3] || "Otros",
-                                laboratorio: col[4] || "General",
-                                observaciones: col[5] || "",
-                                codigoInterno: col[6] || "N/A", // Código del PDF
-                                estado: "Operativo",
-                                fechaAlta: new Date().toISOString()
+                                ...datos,
+                                nombre: col[0] || "Sin nombre",
+                                modelo: col[1] || "N/A",
+                                serial: col[2] || "S/N",
+                                fabricante: col[3] || "Desconocido",
+                                tipo: col[4] || "Otros",
+                                laboratorio: col[5] || "General",
+                                stock: Number(col[6]) || 1,
+                                estado: col[7] || "Operativo",
+                                fechaAlta: new Date().toISOString(),
+                                ultimaActualizacion: new Date().toISOString()
                             };
                         }
 
+                        // ESTO DEBE ESTAR DENTRO DEL IF DE VALIDACIÓN
                         batch.set(ref, datos);
-                        contador++;
+                        contadorGlobal++;
+                        contadorBatch++;
+
+                        // Firebase limita los batches a 500 operaciones
+                        if (contadorBatch === 499) {
+                            await batch.commit();
+                            batch = writeBatch(db);
+                            contadorBatch = 0;
+                        }
                     }
                 }
 
-                if (contador > 0) {
+                // Al terminar el bucle, si hay algo pendiente, se sube
+                if (contadorGlobal > 0) {
                     await batch.commit();
-                    resolve(contador);
+                    resolve(contadorGlobal);
                 } else {
-                    reject("No se encontraron datos válidos en el CSV.");
+                    reject("El archivo está vacío o no tiene el formato correcto.");
                 }
+
             } catch (error) {
-                reject("Error al procesar el archivo: " + error.message);
+                reject("Error de procesamiento: " + error.message);
             }
         };
 
-        reader.onerror = () => reject("Error al leer el archivo.");
+        reader.onerror = () => reject("Error al leer el archivo físico.");
         reader.readAsText(file);
     });
 }
 
 /**
- * Genera una alerta visual en el dashboard
+ * Genera una alerta visual (Feedback)
  */
-export function mostrarFeedback(mensaje, tipo, contenedorId) {
+export function mostrarFeedback(mensaje, tipo, contenedorId = "status-container") {
     const contenedor = document.getElementById(contenedorId);
     if (!contenedor) return;
 
     contenedor.innerHTML = `
-        <div class="alert alert-${tipo} alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
-            <i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
-            ${mensaje}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="alert alert-${tipo === 'success' ? 'success' : 'danger'} alert-dismissible fade show shadow-sm rounded-3">
+            <div class="d-flex align-items-center">
+                <i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} me-2"></i>
+                <div>${mensaje}</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
+
+    if (tipo === 'success') {
+        setTimeout(() => {
+            const el = contenedor.querySelector('.alert');
+            if (el) {
+                const alert = bootstrap.Alert.getOrCreateInstance(el);
+                alert.close();
+            }
+        }, 5000);
+    }
 }

@@ -4,27 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipos Técnicos | Lab Track</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .card-premium { border-radius: 1.2rem; overflow: hidden; }
+        .table thead { background-color: #f8f9fa; }
+        .badge-status { font-size: 0.7rem; font-weight: 600; padding: 0.5em 1em; }
+        .btn-action { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-action:hover { transform: translateY(-2px); }
+    </style>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
+
 </head>
-<body>
+<body class="bg-light">
 
     <div id="sidebar-container"></div>
 
     <div class="main">
-        <div class="container-fluid">
-            <div id="status-container" class="mt-3"></div>
+        <div class="container-fluid py-4">
+            <div id="status-container"></div>
 
-            <header class="d-flex justify-content-between align-items-center mb-5 mt-4">
+            <header class="d-flex justify-content-between align-items-center mb-5 mt-2">
                 <div>
                     <h2 class="fw-bold text-dark m-0">Gestión de Equipos</h2>
-                    <p class="text-muted small m-0">Inventario técnico y material de vidriería.</p>
+                    <p class="text-muted small m-0">Inventario técnico y control de stock.</p>
                 </div>
                 <div class="d-flex gap-2">
                     <label class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold mb-0">
-                        <i class="fas fa-file-csv me-2"></i>Importar CSV
+                        <i class="fas fa-file-csv me-2"></i>Importar
                         <input type="file" id="input-csv" accept=".csv" hidden>
                     </label>
                     <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="abrirModalNuevo()">
@@ -33,22 +41,21 @@
                 </div>
             </header>
 
-            <div class="card-premium border-0 shadow-sm bg-white rounded-4">
+            <div class="card card-premium border-0 shadow-sm bg-white">
                 <div class="table-responsive">
-                    <table class="table align-middle custom-table mb-0">
-                        <thead class="text-muted small fw-bold text-uppercase bg-light">
+                    <table class="table align-middle mb-0">
+                        <thead class="text-muted small fw-bold text-uppercase">
                             <tr>
-                                <th class="ps-4 py-3">Código / Equipo</th>
-                                <th class="py-3">Serial / Marca</th>
-                                <th class="py-3">Categoría</th>
-                                <th class="py-3">Sede/Lab</th>
-                                <th class="py-3">Estado</th>
-                                <th class="py-3">Notas</th>
-                                <th class="text-end pe-4 py-3">Acciones</th>
+                                <th class="ps-4 py-3">Equipo / Modelo</th>
+                                <th>S/N (Serial) / Marca</th>
+                                <th>Categoría / Stock</th>
+                                <th>Sede/Lab</th>
+                                <th>Estado</th>
+                                <th class="text-end pe-4">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="lista-equipos">
-                            <tr><td colspan="7" class="text-center p-5 text-muted">Cargando inventario...</td></tr>
+                            <tr><td colspan="6" class="text-center p-5 text-muted">Cargando inventario...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -57,9 +64,7 @@
                     <div class="text-muted small">
                         Mostrando <span id="pag-inicio" class="fw-bold">0</span> - <span id="pag-fin" class="fw-bold">0</span> de <span id="pag-total" class="fw-bold">0</span> registros
                     </div>
-                    <nav>
-                        <ul class="pagination pagination-sm m-0 gap-1" id="controles-paginacion"></ul>
-                    </nav>
+                    <nav><ul class="pagination pagination-sm m-0 gap-1" id="controles-paginacion"></ul></nav>
                 </div>
             </div>
         </div>
@@ -67,7 +72,7 @@
 
     <div class="modal fade" id="modalEquipo" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header border-0 px-4 pt-4">
                     <h5 class="fw-bold m-0 text-primary" id="modal-titulo">Ficha Técnica de Equipo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -76,48 +81,51 @@
                     <input type="hidden" id="eq-id">
                     <div class="modal-body p-4">
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold">Código Interno</label>
-                                <input type="text" id="eq-codigo" class="form-control rounded-3 bg-light border-0">
-                            </div>
                             <div class="col-md-8">
-                                <label class="form-label small fw-bold">Nombre del Equipo / Modelo</label>
-                                <input type="text" id="eq-nombre" class="form-control rounded-3 bg-light border-0" required>
+                                <label class="form-label small fw-bold">Nombre del Equipo</label>
+                                <input type="text" id="eq-nombre" class="form-control bg-light border-0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Número de Serie (S/N)</label>
+                                <input type="text" id="eq-serial" class="form-control bg-light border-0">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Número de Serie (S/N)</label>
-                                <input type="text" id="eq-serial" class="form-control rounded-3 bg-light border-0">
+                                <label class="form-label small fw-bold">Modelo / Referencia</label>
+                                <input type="text" id="eq-modelo" class="form-control bg-light border-0">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold">Fabricante / Marca</label>
-                                <input type="text" id="eq-fabricante" class="form-control rounded-3 bg-light border-0">
+                                <input type="text" id="eq-fabricante" class="form-control bg-light border-0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Stock Actual</label>
+                                <input type="number" id="eq-stock" class="form-control bg-light border-0" value="1">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold">Categoría</label>
-                                <select id="eq-tipo" class="form-select rounded-3 bg-light border-0">
+                                <select id="eq-tipo" class="form-select bg-light border-0">
                                     <option value="Medición">Medición</option>
                                     <option value="Volumetría">Volumetría</option>
                                     <option value="Óptica">Óptica</option>
                                     <option value="Térmico">Térmico</option>
                                     <option value="Vidriería">Vidriería</option>
-                                    <option value="Otros">Otros</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold">Laboratorio (Sede)</label>
-                                <select id="eq-lab" class="form-select rounded-3 bg-light border-0" required></select>
+                                <select id="eq-lab" class="form-select bg-light border-0" required></select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label small fw-bold">Estado Actual</label>
-                                <select id="eq-estado" class="form-select rounded-3 bg-light border-0">
+                                <select id="eq-estado" class="form-select bg-light border-0">
                                     <option value="Operativo">Operativo</option>
                                     <option value="Mantenimiento">Mantenimiento</option>
                                     <option value="Fuera de Servicio">Fuera de Servicio</option>
                                 </select>
                             </div>
                             <div class="col-12">
-                                <label class="form-label small fw-bold">Observaciones / Detalles del PDF</label>
-                                <textarea id="eq-obs" class="form-control rounded-3 bg-light border-0" rows="2"></textarea>
+                                <label class="form-label small fw-bold">Observaciones</label>
+                                <textarea id="eq-obs" class="form-control bg-light border-0" rows="2"></textarea>
                             </div>
                         </div>
                     </div>
@@ -132,13 +140,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="module">
-        import { cargarSidebar } from './sidebar.js';
-        import { importarCSV, mostrarFeedback } from './importador-csv.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, updateDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        cargarSidebar('equipos');
-        
+        // Carga segura de módulos locales
+        let cargarSidebar, importarCSV, mostrarFeedback;
+        async function loadModules() {
+            try {
+                const modS = await import('./sidebar.js');
+                cargarSidebar = modS.cargarSidebar;
+                cargarSidebar('equipos');
+            } catch(e) { console.error("Error sidebar:", e); }
+
+            try {
+                const modC = await import('./importador-csv.js');
+                importarCSV = modC.importarCSV;
+                mostrarFeedback = modC.mostrarFeedback;
+            } catch(e) { console.error("Error importador:", e); }
+        }
+        loadModules();
+
         const firebaseConfig = { 
             apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", 
             authDomain: "labmanager-b85b1.firebaseapp.com", 
@@ -147,27 +169,39 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
         const modalEq = new bootstrap.Modal(document.getElementById('modalEquipo'));
 
-        // ESTADO GLOBAL PARA PAGINACIÓN
+        let currentAdminId = null;
         let todosLosEquipos = [];
         let paginaActual = 1;
         const registrosPorPagina = 10;
 
-        // --- IMPORTACIÓN ---
-        document.getElementById('input-csv').onchange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            try {
-                const total = await importarCSV(file, db, "equipos");
-                mostrarFeedback(`Importación exitosa: ${total} equipos añadidos.`, 'success', 'status-container');
-            } catch (err) {
-                mostrarFeedback(err, 'danger', 'status-container');
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentAdminId = user.uid;
+                iniciarEscuchas();
+            } else {
+                window.location.href = 'login.html';
             }
-            e.target.value = "";
-        };
+        });
 
-        // --- RENDERIZADO DINÁMICO ---
+        function iniciarEscuchas() {
+            const qEq = query(collection(db, "equipos"), where("adminId", "==", currentAdminId));
+            onSnapshot(qEq, (snap) => {
+                todosLosEquipos = snap.docs.map(d => ({ id: d.id, data: d.data() }));
+                todosLosEquipos.sort((a, b) => (a.data.nombre || "").localeCompare(b.data.nombre || ""));
+                renderizarPagina();
+            });
+
+            const qLab = query(collection(db, "laboratorios"), where("adminId", "==", currentAdminId));
+            onSnapshot(qLab, (snap) => {
+                const select = document.getElementById('eq-lab');
+                select.innerHTML = '<option value="" disabled selected>Seleccionar sede...</option>';
+                snap.forEach(d => select.innerHTML += `<option value="${d.data().nombre}">${d.data().nombre}</option>`);
+            });
+        }
+
         function renderizarPagina() {
             const cont = document.getElementById('lista-equipos');
             const total = todosLosEquipos.length;
@@ -175,38 +209,48 @@
             const fin = Math.min(inicio + registrosPorPagina, total);
             const items = todosLosEquipos.slice(inicio, fin);
 
-            cont.innerHTML = "";
-            if(items.length === 0) {
-                cont.innerHTML = '<tr><td colspan="7" class="text-center p-5 text-muted">No hay datos disponibles.</td></tr>';
-                return;
-            }
+            cont.innerHTML = items.length === 0 ? '<tr><td colspan="6" class="text-center p-5 text-muted">No hay equipos en tu inventario.</td></tr>' : "";
 
             items.forEach(obj => {
                 const e = obj.data;
                 const id = obj.id;
-                const badgeColor = e.estado === 'Operativo' ? 'bg-success' : (e.estado === 'Mantenimiento' ? 'bg-warning text-dark' : 'bg-danger');
+                
+                let badgeClass = "bg-success-subtle text-success border-success";
+                if (e.estado === 'Mantenimiento') badgeClass = "bg-warning-subtle text-warning-emphasis border-warning";
+                if (e.estado === 'Fuera de Servicio') badgeClass = "bg-danger-subtle text-danger border-danger";
 
                 cont.innerHTML += `
-                    <tr>
-                        <td class="ps-4">
-                            <span class="badge bg-dark mb-1" style="font-size: 0.6rem;">${e.codigoInterno || 'S/C'}</span>
-                            <div class="fw-bold text-primary">${e.nombre}</div>
+                    <tr class="align-middle border-bottom">
+                        <td class="ps-4 py-3">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-primary mb-0">${e.nombre || 'Sin nombre'}</span>
+                                <span class="text-muted small text-uppercase">${e.modelo || '-'}</span>
+                            </div>
                         </td>
                         <td>
-                            <div class="small fw-bold">${e.serial || 'S/N'}</div>
-                            <div class="text-muted small text-uppercase">${e.fabricante || '-'}</div>
+                            <div class="d-flex flex-column">
+                                <span class="badge bg-dark text-white mb-1 align-self-start" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                                    ${e.serial || 'S/N'}
+                                </span>
+                                <span class="text-muted small text-uppercase">${e.fabricante || '-'}</span>
+                            </div>
                         </td>
-                        <td><span class="badge bg-light text-dark border">${e.tipo}</span></td>
-                        <td><div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${e.laboratorio}</div></td>
-                        <td><span class="badge ${badgeColor} rounded-pill px-3" style="font-size: 0.7rem;">${e.estado}</span></td>
-                        <td><div class="small text-muted text-truncate" style="max-width: 150px;">${e.observaciones || '-'}</div></td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="badge bg-light text-dark border fw-medium mb-1 align-self-start">${e.tipo || 'Otros'}</span>
+                                <span class="small text-danger fw-bold"><i class="fas fa-boxes me-1"></i>Stock: ${e.stock || '0'}</span>
+                            </div>
+                        </td>
+                        <td><div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${e.laboratorio || 'General'}</div></td>
+                        <td><span class="badge border badge-status rounded-pill ${badgeClass}">${(e.estado || 'Operativo').toUpperCase()}</span></td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-light text-primary rounded-circle shadow-sm mx-1" onclick="editarEquipo('${id}')"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="eliminarEquipo('${id}', '${e.nombre}')"><i class="fas fa-trash"></i></button>
+                            <div class="d-flex justify-content-end gap-1">
+                                <button class="btn btn-action btn-light text-primary rounded-circle border-0 shadow-sm" onclick="editarEquipo('${id}')"><i class="fas fa-pen fa-xs"></i></button>
+                                <button class="btn btn-action btn-light text-danger rounded-circle border-0 shadow-sm" onclick="eliminarEquipo('${id}', '${e.nombre}')"><i class="fas fa-trash fa-xs"></i></button>
+                            </div>
                         </td>
                     </tr>`;
             });
-
             actualizarPaginador(total, inicio, fin);
         }
 
@@ -214,41 +258,15 @@
             document.getElementById('pag-inicio').innerText = total === 0 ? 0 : inicio + 1;
             document.getElementById('pag-fin').innerText = fin;
             document.getElementById('pag-total').innerText = total;
-
             const paginasTotales = Math.ceil(total / registrosPorPagina);
             const nav = document.getElementById('controles-paginacion');
             nav.innerHTML = "";
-
-            // Botón Anterior
-            nav.innerHTML += `<li class="page-item ${paginaActual === 1 ? 'disabled' : ''}"><a class="page-link border-0 rounded-pill mx-1" href="#" onclick="cambiarPagina(${paginaActual - 1})">«</a></li>`;
-
             for (let i = 1; i <= paginasTotales; i++) {
-                if(i === 1 || i === paginasTotales || (i >= paginaActual - 1 && i <= paginaActual + 1)) {
-                    nav.innerHTML += `<li class="page-item ${i === paginaActual ? 'active' : ''}"><a class="page-link border-0 rounded-pill mx-1" href="#" onclick="cambiarPagina(${i})">${i}</a></li>`;
-                }
+                nav.innerHTML += `<li class="page-item ${i === paginaActual ? 'active' : ''}"><a class="page-link border-0 rounded-pill mx-1" href="javascript:void(0)" onclick="cambiarPagina(${i})">${i}</a></li>`;
             }
-
-            // Botón Siguiente
-            nav.innerHTML += `<li class="page-item ${paginaActual === paginasTotales || paginasTotales === 0 ? 'disabled' : ''}"><a class="page-link border-0 rounded-pill mx-1" href="#" onclick="cambiarPagina(${paginaActual + 1})">»</a></li>`;
         }
 
         window.cambiarPagina = (p) => { paginaActual = p; renderizarPagina(); };
-
-        // --- FIRESTORE LISTENERS ---
-        onSnapshot(collection(db, "equipos"), (snap) => {
-            todosLosEquipos = [];
-            snap.forEach(d => todosLosEquipos.push({ id: d.id, data: d.data() }));
-            todosLosEquipos.sort((a, b) => a.data.nombre.localeCompare(b.data.nombre));
-            renderizarPagina();
-        });
-
-        onSnapshot(collection(db, "laboratorios"), (snap) => {
-            const select = document.getElementById('eq-lab');
-            select.innerHTML = '<option value="" disabled selected>Seleccionar sede...</option>';
-            snap.forEach(d => select.innerHTML += `<option value="${d.data().nombre}">${d.data().nombre}</option>`);
-        });
-
-        // --- CRUD ACTIONS ---
         window.abrirModalNuevo = () => {
             document.getElementById('eq-id').value = "";
             document.getElementById('form-equipo').reset();
@@ -260,28 +278,31 @@
             const d = await getDoc(doc(db, "equipos", id));
             const e = d.data();
             document.getElementById('eq-id').value = id;
-            document.getElementById('eq-codigo').value = e.codigoInterno || "";
-            document.getElementById('eq-nombre').value = e.nombre;
+            document.getElementById('eq-nombre').value = e.nombre || "";
+            document.getElementById('eq-modelo').value = e.modelo || "";
+            document.getElementById('eq-stock').value = e.stock || "1";
             document.getElementById('eq-serial').value = e.serial || "";
             document.getElementById('eq-fabricante').value = e.fabricante || "";
-            document.getElementById('eq-tipo').value = e.tipo;
-            document.getElementById('eq-lab').value = e.laboratorio;
-            document.getElementById('eq-estado').value = e.estado;
+            document.getElementById('eq-tipo').value = e.tipo || "Otros";
+            document.getElementById('eq-lab').value = e.laboratorio || "";
+            document.getElementById('eq-estado').value = e.estado || "Operativo";
             document.getElementById('eq-obs').value = e.observaciones || "";
             document.getElementById('modal-titulo').innerText = "Actualizar Ficha Técnica";
             modalEq.show();
         };
 
         window.eliminarEquipo = async (id, nombre) => {
-            if(confirm(`¿Deseas eliminar el equipo ${nombre}?`)) await deleteDoc(doc(db, "equipos", id));
+            if(confirm(`¿Deseas eliminar ${nombre}?`)) await deleteDoc(doc(db, "equipos", id));
         };
 
-        document.getElementById('form-equipo').onsubmit = async (e) => {
-            e.preventDefault();
+        document.getElementById('form-equipo').onsubmit = async (ev) => {
+            ev.preventDefault();
             const id = document.getElementById('eq-id').value;
             const payload = {
-                codigoInterno: document.getElementById('eq-codigo').value,
+                adminId: currentAdminId,
                 nombre: document.getElementById('eq-nombre').value,
+                modelo: document.getElementById('eq-modelo').value,
+                stock: document.getElementById('eq-stock').value,
                 serial: document.getElementById('eq-serial').value,
                 fabricante: document.getElementById('eq-fabricante').value,
                 tipo: document.getElementById('eq-tipo').value,
@@ -290,8 +311,20 @@
                 observaciones: document.getElementById('eq-obs').value,
                 fechaUpdate: new Date().toISOString()
             };
-            id ? await updateDoc(doc(db, "equipos", id), payload) : await addDoc(collection(db, "equipos"), payload);
-            modalEq.hide();
+            try {
+                id ? await updateDoc(doc(db, "equipos", id), payload) : await addDoc(collection(db, "equipos"), payload);
+                modalEq.hide();
+            } catch (err) { alert("Error al guardar: " + err.message); }
+        };
+
+        document.getElementById('input-csv').onchange = async (ev) => {
+            const file = ev.target.files[0];
+            if (!file || !importarCSV) return;
+            try {
+                const total = await importarCSV(file, db, "equipos");
+                mostrarFeedback(`Importados ${total} equipos con éxito.`, 'success', 'status-container');
+            } catch (err) { mostrarFeedback(err, 'danger', 'status-container'); }
+            ev.target.value = "";
         };
 
     </script>

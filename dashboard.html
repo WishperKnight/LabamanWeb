@@ -1,49 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Lab Track</title>
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+            <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
+
 </head>
+
 <body class="bg-light">
 
     <div id="sidebar-container"></div>
 
     <div class="main">
-        <div class="container-fluid">
-            <header class="d-flex justify-content-between align-items-center mb-5 mt-4">
+        <div class="container-fluid py-4">
+
+            <header class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="fw-bold text-dark m-0">Panel de Control</h2>
-                    <p class="text-muted small m-0">Gestión centralizada de activos y personal.</p>
+                    <p class="text-muted small m-0">Estado global de sedes y mantenimiento.</p>
                 </div>
-                <div class="bg-white px-3 py-2 rounded-3 shadow-sm fw-bold border">
+                <div class="bg-white px-3 py-2 rounded-3 shadow-sm fw-bold border border-white">
                     <i class="far fa-calendar-alt me-2 text-primary"></i> <span id="fecha-actual"></span>
                 </div>
             </header>
 
-            <div class="row mb-5">
+            <div class="row g-4 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card-premium card-blue">
+                        <div class="icon-box"><i class="fas fa-hospital"></i></div>
+                        <div>
+                            <h2 id="count-labs" class="fw-bold mb-0">0</h2><small
+                                class="text-muted fw-bold small">SEDES</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card-premium card-green">
+                        <div class="icon-box"><i class="fas fa-box"></i></div>
+                        <div>
+                            <h2 id="count-materiales" class="fw-bold mb-0">0</h2><small
+                                class="text-muted fw-bold small">MATERIALES</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card-premium card-red">
+                        <div class="icon-box"><i class="fas fa-tools"></i></div>
+                        <div>
+                            <h2 id="count-incidencias" class="fw-bold mb-0">0</h2><small
+                                class="text-muted fw-bold small">INCIDENCIAS</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card-premium card-dark">
+                        <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+                        <div>
+                            <h2 id="count-users" class="fw-bold mb-0">0</h2><small
+                                class="text-muted fw-bold small">EQUIPO</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card-premium border-0 shadow-sm bg-white rounded-4 p-4 border-start border-primary border-4">
+                    <div
+                        class="card-premium border-0 shadow-sm bg-white rounded-4 p-4 border-start border-primary border-4">
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                             <div>
-                                <h6 class="fw-bold m-0"><i class="fas fa-file-export me-2 text-primary"></i>Plantillas de Importación</h6>
-                                <p class="text-muted small mb-0">Descarga el formato CSV para carga masiva.</p>
+                                <h6 class="fw-bold m-0"><i class="fas fa-file-csv me-2 text-primary"></i>Plantillas de
+                                    Carga Masiva</h6>
+                                <p class="text-muted small mb-0">Descarga el formato base para importar tus datos sin
+                                    errores.</p>
                             </div>
                             <div class="d-flex gap-2">
-                                <button id="btn-p-reactivos" class="btn btn-primary rounded-pill px-3 shadow-sm btn-sm">
-                                    <i class="fas fa-flask me-2"></i>Reactivos
+                                <button id="btn-tpl-equipos" class="btn btn-primary rounded-pill px-4 shadow-sm btn-sm">
+                                    <i class="fas fa-microscope me-2"></i>Plantilla Equipos
                                 </button>
-                                <button id="btn-p-fungibles" class="btn btn-info text-white rounded-pill px-3 shadow-sm btn-sm">
-                                    <i class="fas fa-box me-2"></i>Fungibles
-                                </button>
-                                <button id="btn-p-equipos" class="btn btn-dark rounded-pill px-3 shadow-sm btn-sm">
-                                    <i class="fas fa-microscope me-2"></i>Equipos
+                                <button id="btn-tpl-stock"
+                                    class="btn btn-outline-primary rounded-pill px-4 shadow-sm btn-sm">
+                                    <i class="fas fa-vial me-2"></i>Plantilla Inventario
                                 </button>
                             </div>
                         </div>
@@ -51,59 +93,47 @@
                 </div>
             </div>
 
-            <div class="row g-4 mb-5">
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card-premium card-blue">
-                        <div class="icon-box"><i class="fas fa-hospital"></i></div>
-                        <div><h2 id="count-labs" class="fw-bold mb-0">0</h2><small class="text-muted fw-bold">SEDES</small></div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card-premium card-green">
-                        <div class="icon-box"><i class="fas fa-vials"></i></div>
-                        <div><h2 id="count-materiales" class="fw-bold mb-0">0</h2><small class="text-muted fw-bold">ARTÍCULOS</small></div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card-premium card-red">
-                        <div class="icon-box"><i class="fas fa-exclamation-circle"></i></div>
-                        <div><h2 id="count-incidencias" class="fw-bold mb-0">0</h2><small class="text-muted fw-bold">INCIDENCIAS</small></div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card-premium card-dark">
-                        <div class="icon-box"><i class="fas fa-user-md"></i></div>
-                        <div><h2 id="count-users" class="fw-bold mb-0">0</h2><small class="text-muted fw-bold">PERSONAL</small></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4 mb-5">
+            <div class="row g-4">
                 <div class="col-lg-8">
-                    <div class="card-premium h-100 shadow-sm border-0 bg-white p-4 rounded-4">
-                        <h6 class="fw-bold mb-4"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Estado de Laboratorios</h6>
+                    <div class="card-premium shadow-sm border-0 bg-white p-4 rounded-4 mb-4">
+                        <h6 class="fw-bold mb-4 text-dark"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Estado
+                            de Laboratorios</h6>
                         <div class="table-responsive">
                             <table class="table align-middle">
                                 <thead class="text-muted small">
                                     <tr>
                                         <th>NOMBRE</th>
-                                        <th>UBICACIÓN</th>
-                                        <th>PERSONAL ASIGNADO</th>
+                                        <th>PERSONAL</th>
                                         <th class="text-end">ESTADO</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabla-labs">
-                                    </tbody>
+                                <tbody id="tabla-labs"></tbody>
                             </table>
                         </div>
+                    </div>
+
+                    <div class="card-premium shadow-sm border-0 bg-white p-4 rounded-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 class="fw-bold m-0"><i class="fas fa-clipboard-list me-2 text-danger"></i>Incidencias
+                                Pendientes</h6>
+                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3" id="badge-incidencias">0
+                                pendientes</span>
+                        </div>
+                        <div id="lista-incidencias"></div>
                     </div>
                 </div>
 
                 <div class="col-lg-4">
-                    <div class="card-premium h-100 shadow-sm border-0 bg-white p-4 rounded-4">
-                        <h6 class="fw-bold mb-4 text-danger"><i class="fas fa-bell me-2"></i>Alertas Críticas</h6>
-                        <div id="contenedor-alertas">
-                            <div class="text-center py-5 text-muted small">Cargando alertas...</div>
+                    <div class="card-premium shadow-sm border-0 bg-white p-4 rounded-4 h-100 d-flex flex-column">
+                        <h6 class="fw-bold mb-4 text-warning"><i class="fas fa-flask me-2"></i>Alertas de Stock Bajo
+                        </h6>
+                        <div id="contenedor-alertas" class="flex-grow-1"></div>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-3">
+                            <button id="btn-prev-alert" class="btn btn-sm btn-light rounded-pill"><i
+                                    class="fas fa-chevron-left"></i></button>
+                            <span id="page-info" class="small fw-bold text-muted">Página 1</span>
+                            <button id="btn-next-alert" class="btn btn-sm btn-light rounded-pill"><i
+                                    class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -111,100 +141,184 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { cargarSidebar } from './sidebar.js';
-        import { descargarCSV } from './exportador-csv.js'; 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // 1. IMPORTAMOS LA DB Y LA SEGURIDAD DESDE TU ARCHIVO NUEVO
+        import { db, verificarSesion } from './firebase-auth.js';
+        import { collection, onSnapshot, query, where, doc, updateDoc, orderBy, limit, startAfter, getDocs, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         cargarSidebar('dashboard');
+        document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString();
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", 
-            authDomain: "labmanager-b85b1.firebaseapp.com", 
-            projectId: "labmanager-b85b1", 
-            appId: "1:651630503448:web:9a327cbf30b84fd763c56d" 
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // --- 2. BLOQUE DE SEGURIDAD PRINCIPAL ---
+        // Nada se ejecuta hasta que Firebase confirme que el usuario es válido
+        verificarSesion((adminId) => {
+            console.log("Acceso autorizado. Cargando datos para UID:", adminId);
 
-        // Fecha Actual
-        document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+            // Ejecutamos toda la lógica pasando el ID del admin
+            iniciarDashboard(adminId);
+        });
 
-        // --- MANEJO DE DATOS CRUZADOS (USUARIOS + LABS) ---
-        let usuariosGlobales = [];
-        let labsGlobales = [];
+        // --- 3. LÓGICA DEL DASHBOARD (ENCAPSULADA) ---
+        function iniciarDashboard(adminId) {
 
-        function renderizarTablaLabs() {
-            const tb = document.getElementById('tabla-labs');
-            tb.innerHTML = "";
-            
-            labsGlobales.forEach(lab => {
-                // Filtramos usuarios que pertenezcan a este lab
-                const tecnicosEnLab = usuariosGlobales.filter(u => u.laboratorioId === lab.id).length;
-                const textoTecnicos = tecnicosEnLab === 1 ? "1 Especialista" : `${tecnicosEnLab} Especialistas`;
+            // A. CARGAR PERSONAL (Para cruzar datos con Labs)
+            let usuariosGlobales = [];
+            // Filtramos usuarios que pertenezcan a este admin
+            onSnapshot(query(collection(db, "usuarios"), where("adminId", "==", adminId)), snap => {
+                usuariosGlobales = snap.docs.map(d => d.data());
+                document.getElementById('count-users').innerText = snap.size;
+                cargarLabs(adminId, usuariosGlobales); // Pasamos los usuarios a la función de labs
+            });
 
-                tb.innerHTML += `
-                    <tr>
-                        <td><div class="fw-bold text-dark">${lab.nombre}</div></td>
-                        <td><span class="text-muted small"><i class="fas fa-location-dot me-1"></i>${lab.ubicacion || 'N/A'}</span></td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="badge bg-light text-primary border me-2"><i class="fas fa-users-cog"></i></div>
-                                <span class="small fw-bold">${textoTecnicos}</span>
-                            </div>
-                        </td>
-                        <td class="text-end">
-                            <span class="badge bg-success-subtle text-success border-0 px-3 rounded-pill">Activo</span>
-                        </td>
-                    </tr>`;
+            // B. CARGAR LABORATORIOS
+            function cargarLabs(uid, usuarios) {
+                onSnapshot(query(collection(db, "laboratorios"), where("adminId", "==", uid)), snap => {
+                    const tb = document.getElementById('tabla-labs');
+                    document.getElementById('count-labs').innerText = snap.size;
+                    tb.innerHTML = "";
+
+                    snap.forEach(d => {
+                        const lab = d.data();
+                        // Contamos personal de este lab específico
+                        const personalCount = usuarios.filter(u => u.laboratorioId === d.id).length;
+
+                        tb.innerHTML += `
+                        <tr>
+                            <td><div class="fw-bold text-dark">${lab.nombre}</div><small class="text-muted">${lab.ubicacion || ''}</small></td>
+                            <td><span class="badge bg-light text-primary border px-3">${personalCount} Especialistas</span></td>
+                            <td class="text-end"><span class="badge bg-success-subtle text-success border-0 px-3 rounded-pill">Operativo</span></td>
+                        </tr>`;
+                    });
+                });
+            }
+
+            // C. GESTIÓN DE INCIDENCIAS
+            const qIncidencias = query(
+                collection(db, "incidencias"),
+                where("adminId", "==", adminId), // FILTRO DE SEGURIDAD
+                where("estado", "==", "abierto")
+            );
+
+            onSnapshot(qIncidencias, snap => {
+                const lista = document.getElementById('lista-incidencias');
+                document.getElementById('count-incidencias').innerText = snap.size;
+                document.getElementById('badge-incidencias').innerText = `${snap.size} pendientes`;
+                lista.innerHTML = snap.empty ? '<div class="text-center py-4 text-muted small">No hay tareas pendientes</div>' : "";
+
+                snap.forEach(d => {
+                    const inc = d.data();
+                    const equipo = inc.equipo || inc.Equipo || "Equipo";
+                    const lab = inc.laboratorio || inc.Laboratorio || "Sede";
+                    const desc = inc.descripcion || inc.Descripcion || "Sin nota";
+
+                    lista.innerHTML += `
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded-4 border-start border-danger border-4 shadow-sm">
+                        <div>
+                            <span class="fw-bold text-dark d-block">${equipo}</span>
+                            <small class="text-muted"><i class="fas fa-flask me-1"></i>${lab} — ${desc}</small>
+                        </div>
+                        <button class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" onclick="marcarComoHecho('${d.id}')">
+                            <i class="fas fa-check me-1"></i> Hecho
+                        </button>
+                    </div>`;
+                });
+            });
+
+            // D. ALERTAS DE STOCK (PAGINADAS Y PRIVADAS)
+            let lastAlertDoc = null;
+            let alertPage = 1;
+
+            window.cargarAlertasStock = async (dir = 'inicio') => {
+                const cont = document.getElementById('contenedor-alertas');
+
+                // Query base con filtro de adminID
+                let q = query(
+                    collection(db, "inventario"),
+                    where("adminId", "==", adminId),
+                    where("cantidad_unidades", "<", 5),
+                    orderBy("cantidad_unidades", "asc"),
+                    limit(6)
+                );
+
+                if (dir === 'next' && lastAlertDoc) {
+                    q = query(
+                        collection(db, "inventario"),
+                        where("adminId", "==", adminId),
+                        where("cantidad_unidades", "<", 5),
+                        orderBy("cantidad_unidades", "asc"),
+                        startAfter(lastAlertDoc),
+                        limit(6)
+                    );
+                }
+
+                const snap = await getDocs(q);
+                cont.innerHTML = "";
+
+                if (snap.empty) {
+                    cont.innerHTML = '<div class="text-center py-5 text-muted">Stock en orden</div>';
+                    if (dir === 'inicio') document.getElementById('btn-next-alert').disabled = true;
+                    return;
+                }
+
+                lastAlertDoc = snap.docs[snap.docs.length - 1];
+                snap.forEach(doc => {
+                    const m = doc.data();
+                    cont.innerHTML += `
+                    <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-2 py-2 px-3 d-flex justify-content-between align-items-center">
+                        <span class="small fw-bold">${m.nombre}</span>
+                        <span class="badge bg-danger rounded-pill">${m.cantidad_unidades} uds</span>
+                    </div>`;
+                });
+
+                document.getElementById('btn-next-alert').disabled = snap.size < 6;
+                document.getElementById('btn-prev-alert').disabled = alertPage === 1;
+                document.getElementById('page-info').innerText = `Pág. ${alertPage}`;
+            };
+
+            // Event Listeners para paginación
+            document.getElementById('btn-next-alert').onclick = () => { alertPage++; window.cargarAlertasStock('next'); };
+            document.getElementById('btn-prev-alert').onclick = () => { alertPage = 1; lastAlertDoc = null; window.cargarAlertasStock('inicio'); };
+
+            // Inicializar stock
+            window.cargarAlertasStock();
+
+            // Contador total de materiales (Solo del admin)
+            onSnapshot(query(collection(db, "inventario"), where("adminId", "==", adminId)), s => {
+                document.getElementById('count-materiales').innerText = s.size;
             });
         }
 
-        // Listeners Realtime
-        onSnapshot(collection(db, "usuarios"), snap => {
-            usuariosGlobales = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            document.getElementById('count-users').innerText = snap.size;
-            renderizarTablaLabs();
-        });
+        // --- 4. FUNCIONES GLOBALES (CSV Y ACTIONS) ---
 
-        onSnapshot(collection(db, "laboratorios"), snap => {
-            labsGlobales = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            document.getElementById('count-labs').innerText = snap.size;
-            renderizarTablaLabs();
-        });
+        // Función Atómica para cerrar incidencia
+        window.marcarComoHecho = async (id) => {
+            if (!confirm("¿Cerrar incidencia?")) return;
+            const batch = writeBatch(db);
+            const ref = doc(db, "incidencias", id);
 
-        onSnapshot(collection(db, "inventario"), snap => {
-            document.getElementById('count-materiales').innerText = snap.size;
-            const alertaCont = document.getElementById('contenedor-alertas');
-            let alertasHTML = "";
-            
-            snap.forEach(doc => {
-                const m = doc.data();
-                // Alerta si el stock es bajo (menos de 5 unidades)
-                if(Number(m.cantidad_unidades) < 5) {
-                    alertasHTML += `
-                        <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-2 py-2 px-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="small fw-bold text-dark">${m.nombre}</span>
-                                <span class="badge bg-danger rounded-pill">${m.cantidad_unidades} uds</span>
-                            </div>
-                        </div>`;
-                }
+            batch.update(ref, {
+                estado: "cerrado",
+                fecha_cierre: serverTimestamp()
             });
-            alertaCont.innerHTML = alertasHTML || '<div class="text-center py-5 text-muted small">No hay alertas de stock.</div>';
-        });
 
-        onSnapshot(collection(db, "incidencias"), s => document.getElementById('count-incidencias').innerText = s.size);
+            await batch.commit();
+        };
 
-        // --- BOTONES DE PLANTILLAS ---
-        document.getElementById('btn-p-reactivos').onclick = () => {
-            descargarCSV([{"Nombre": "Ej: Etanol", "Fabricante": "Panreac", "Cantidad": "1", "Caducidad": "2026-01-01", "Lote": "L123", "Molaridad": "1M", "Riqueza": "99%", "Stock": "10", "Tipo": "reactivo"}], "Plantilla_Reactivos");
+        // Descarga de CSV (Sin cambios, solo lógica UI)
+        const descargarCSV = (nombre, cabeceras, ejemplo) => {
+            const contenido = "\ufeff" + cabeceras + "\n" + ejemplo;
+            const blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `${nombre}.csv`;
+            link.click();
         };
-        document.getElementById('btn-p-fungibles').onclick = () => {
-            descargarCSV([{"Nombre": "Ej: Guantes", "Marca": "Deltalab", "Unidades": "100", "Capacidad": "M", "Lote": "L99", "Fecha de caducidad": "2030-01-01", "Tipo": "fungible"}], "Plantilla_Fungibles");
-        };
+
+        document.getElementById('btn-tpl-equipos').onclick = () => descargarCSV("Plantilla_Equipos", "Nombre,Serial,Fabricante,Categoría,Laboratorio,Observaciones", "Microscopio,SN123,Zuzi,Óptica,General,Revisión pendiente");
+        document.getElementById('btn-tpl-stock').onclick = () => descargarCSV("Plantilla_Inventario", "Nombre,Cantidad,Categoria,Laboratorio,Observaciones", "Guantes,100,Fungible,General,Talla M");
+
     </script>
 </body>
+
 </html>
