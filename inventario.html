@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario - Lab Track</title>
+    <title>Inventario | Lab Track</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><path fill=%22%233b82f6%22 d=%22M352 320c-23.03 0-44.42 8.35-61.1 22.06l-67.9-20.94c4.6-11.41 7-23.59 7-36.12 0-53.02-42.98-96-96-96s-96 42.98-96 96 42.98 96 96 96c8.48 0 16.63-1.11 24.39-3.18l67.35 20.77C226.04 443.34 224 447.45 224 452c0 33.14 26.86 60 60 60h168c33.14 0 60-26.86 60-60v-72c0-33.14-26.86-60-60-60H352zM134 320c-18.78 0-34-15.22-34-34s15.22-34 34-34 34 15.22 34 34-15.22 34-34 34z%22/></svg>">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,180 +14,241 @@
     <div id="sidebar-container"></div>
 
     <div class="main">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold mb-0">Gestión de Inventario</h2>
-                <p class="text-muted small">Control de materiales, reactivos y fungibles según el modelo E-R.</p>
-            </div>
-            <button class="btn btn-primary shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalInv">
-                <i class="fas fa-plus me-2"></i>Nuevo Material
-            </button>
-        </div>
+        <div class="container-fluid">
+            <header class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold text-dark m-0">Inventario de Materiales</h2>
+                    <p class="text-muted small m-0">Gestión de stock, fungibles y reactivos por sede.</p>
+                </div>
+                <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold" onclick="abrirModalNuevo()">
+                    <i class="fas fa-plus me-2"></i>Nuevo Material
+                </button>
+            </header>
 
-        <div class="card-custom">
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Material</th>
-                            <th>Tipo</th>
-                            <th>Ubicación</th>
-                            <th>Stock / Capacidad</th>
-                            <th class="text-end">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lista-inv">
-                        </tbody>
-                </table>
+            <div class="card-premium border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="text-muted small fw-bold text-uppercase">
+                            <tr>
+                                <th class="ps-4">Descripción y Tipo</th>
+                                <th>Stock (Actual / Total)</th>
+                                <th>Laboratorio</th>
+                                <th class="text-end pe-4">Acciones / Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-materiales"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalInv" tabindex="-1" aria-labelledby="modalInvLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 p-4 shadow-lg">
-                <h5 class="fw-bold mb-4" id="modalInvLabel">Registrar Nuevo Material</h5>
-                
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Nombre del Material</label>
-                    <input type="text" id="invNombre" class="form-control" placeholder="Ej: Ácido Sulfúrico">
+    <div class="modal fade" id="modalMaterial" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+                <div class="modal-header border-0 px-4 pt-4">
+                    <h5 class="fw-bold m-0 text-success" id="modal-titulo">Registrar Material</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <form id="form-material">
+                    <input type="hidden" id="mat-id">
+                    <div class="modal-body p-4">
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label small fw-bold">Nombre del Material</label>
+                                <input type="text" id="mat-nombre" class="form-control rounded-3 bg-light border-0" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label small fw-bold">Clasificación</label>
+                                <select id="mat-tipo" class="form-select rounded-3 bg-light border-0" onchange="toggleCamposReactivo()" required>
+                                    <option value="fungible">Fungible</option>
+                                    <option value="reactivo">Reactivo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label small fw-bold">Cantidad Actual</label>
+                                <input type="number" id="mat-cantidad" class="form-control rounded-3 bg-light border-0" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label small fw-bold">Capacidad Total</label>
+                                <input type="number" id="mat-capacidad" class="form-control rounded-3 bg-light border-0" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label small fw-bold">Ubicación (Lab)</label>
+                                <select id="mat-lab" class="form-select rounded-3 bg-light border-0" required>
+                                    <option value="" disabled selected>Elegir laboratorio...</option>
+                                </select>
+                            </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold">Tipo de Material</label>
-                        <select id="invTipo" class="form-select">
-                            <option value="Reactivo">Reactivo</option>
-                            <option value="Fungible">Fungible</option>
-                        </select>
+                            <div id="seccion-reactivo" class="row g-3 d-none mt-2 mx-0 p-3 rounded-4 bg-warning-subtle border border-warning-subtle">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-dark">Etiqueta</label>
+                                    <select id="mat-etiqueta" class="form-select rounded-3 border-0">
+                                        <option value="ácido">Ácido</option>
+                                        <option value="base">Base</option>
+                                        <option value="tinción">Tinción</option>
+                                        <option value="medio_cultivo">Medio de Cultivo</option>
+                                        <option value="solvente">Solvente</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-dark">URL Ficha Técnica</label>
+                                    <input type="url" id="mat-ficha" class="form-control rounded-3 border-0">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold">Cantidad Actual</label>
-                        <input type="number" id="invStock" class="form-control" placeholder="0">
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow-sm">Guardar Cambios</button>
                     </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Capacidad Total (ml / mg / ud)</label>
-                    <input type="number" id="invCapacidad" class="form-control" placeholder="Capacidad según empaque">
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label small fw-bold">Ubicación (Almacén / Estante)</label>
-                    <input type="text" id="invUbicacion" class="form-control" placeholder="Ej: Pasillo B - Nevera 2">
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-light w-50" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary w-50 fw-bold" id="btnG">
-                        <i class="fas fa-save me-2"></i>Guardar
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script type="module">
         import { cargarSidebar } from './sidebar.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Configuración de Firebase
+        cargarSidebar('inventario');
+
         const firebaseConfig = { 
             apiKey: "AIzaSyA_aXLKh1HXcXGD1_s7mA7VuCPsSm1IBPA", 
             authDomain: "labmanager-b85b1.firebaseapp.com", 
             projectId: "labmanager-b85b1", 
-            storageBucket: "labmanager-b85b1.firebasestorage.app", 
-            messagingSenderId: "651630503448", 
             appId: "1:651630503448:web:9a327cbf30b84fd763c56d" 
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
-        // Cargar Sidebar
-        cargarSidebar('inventario');
+        // --- FUNCIONES DE MODAL ---
+        window.abrirModalNuevo = () => {
+            document.getElementById('mat-id').value = "";
+            document.getElementById('form-material').reset();
+            document.getElementById('modal-titulo').innerText = "Registrar Material";
+            document.getElementById('seccion-reactivo').classList.add('d-none');
+            new bootstrap.Modal(document.getElementById('modalMaterial')).show();
+        };
 
-        // Renderizado de tabla en tiempo real
-        onSnapshot(collection(db, "inventario"), s => {
-            const l = document.getElementById('lista-inv');
-            if(!l) return;
-            l.innerHTML = '';
-            s.forEach(d => {
-                const item = d.data();
-                l.innerHTML += `
+        window.toggleCamposReactivo = () => {
+            const tipo = document.getElementById('mat-tipo').value;
+            document.getElementById('seccion-reactivo').classList.toggle('d-none', tipo !== 'reactivo');
+        };
+
+        // --- EDITAR ---
+        window.editarMaterial = async (id) => {
+            const docRef = doc(db, "inventario", id);
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+                const m = snap.data();
+                document.getElementById('mat-id').value = id;
+                document.getElementById('mat-nombre').value = m.nombre || "";
+                document.getElementById('mat-tipo').value = m.tipo || "fungible";
+                document.getElementById('mat-cantidad').value = m.cantidad || 0;
+                document.getElementById('mat-capacidad').value = m.capacidadTotal || 0;
+                document.getElementById('mat-lab').value = m.laboratorio || "";
+                document.getElementById('mat-etiqueta').value = m.etiqueta || "otro";
+                document.getElementById('mat-ficha').value = m.fichaTecnica || "";
+                document.getElementById('modal-titulo').innerText = "Editar Material";
+                toggleCamposReactivo();
+                new bootstrap.Modal(document.getElementById('modalMaterial')).show();
+            }
+        };
+
+        // --- ELIMINAR ---
+        window.eliminarMaterial = async (id, nombre) => {
+            if (confirm(`¿Estás seguro de que deseas eliminar "${nombre}" del inventario?`)) {
+                try {
+                    await deleteDoc(doc(db, "inventario", id));
+                } catch (error) {
+                    alert("Error al eliminar: " + error.message);
+                }
+            }
+        };
+
+        // --- CARGAR LABORATORIOS ---
+        onSnapshot(collection(db, "laboratorios"), (snap) => {
+            const select = document.getElementById('mat-lab');
+            select.innerHTML = '<option value="" disabled selected>Elegir laboratorio...</option>';
+            snap.forEach(d => select.innerHTML += `<option value="${d.data().nombre}">${d.data().nombre}</option>`);
+        });
+
+        // --- RENDERIZADO TABLA ---
+        onSnapshot(collection(db, "inventario"), (snap) => {
+            const cont = document.getElementById('lista-materiales');
+            cont.innerHTML = "";
+            snap.forEach(d => {
+                const m = d.data();
+                const actual = parseInt(m.cantidad) || 0;
+                const total = parseInt(m.capacidadTotal) || actual || 1;
+                const porcentaje = Math.min(Math.round((actual / total) * 100), 100);
+                const esBajo = porcentaje <= 20;
+
+                cont.innerHTML += `
                     <tr>
-                        <td><span class="fw-bold">${item.nombre}</span></td>
-                        <td><span class="badge bg-light text-dark border">${item.tipo}</span></td>
-                        <td><small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>${item.ubicacion || 'No asignada'}</small></td>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">${m.nombre || 'S/N'}</div>
+                            <span class="badge ${m.tipo === 'reactivo' ? 'bg-warning text-dark' : 'bg-info text-white'}" style="font-size: 0.6rem;">${(m.tipo || 'fungible').toUpperCase()}</span>
+                        </td>
                         <td>
-                            <div class="d-flex align-items-center">
-                                <span class="fw-bold me-2">${item.cantidadActual}</span>
-                                <span class="text-muted small">/ ${item.capacidadTotal || 'N/A'}</span>
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="width: 100px;">
+                                    <div class="progress" style="height: 6px; background-color: #eee;">
+                                        <div class="progress-bar ${esBajo ? 'bg-danger' : 'bg-success'}" style="width: ${porcentaje}%"></div>
+                                    </div>
+                                </div>
+                                <span class="fw-bold ${esBajo ? 'text-danger' : 'text-dark'}">${actual} / ${total}</span>
                             </div>
                         </td>
-                        <td class="text-end">
-                            <a href="detalles.html?id=${d.id}&col=inventario" class="btn btn-sm btn-outline-primary rounded-pill">
-                                <i class="fas fa-edit me-1"></i> Gestionar
-                            </a>
+                        <td><span class="small text-muted"><i class="fas fa-building me-1"></i>${m.laboratorio || 'N/A'}</span></td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2 align-items-center">
+                                ${m.fichaTecnica ? `<a href="${m.fichaTecnica}" target="_blank" class="btn btn-sm btn-light rounded-circle shadow-sm text-danger"><i class="fas fa-file-pdf"></i></a>` : ''}
+                                <button onclick="editarMaterial('${d.id}')" class="btn btn-sm btn-light rounded-circle shadow-sm text-primary"><i class="fas fa-pen"></i></button>
+                                <button onclick="eliminarMaterial('${d.id}', '${m.nombre}')" class="btn btn-sm btn-light rounded-circle shadow-sm text-danger"><i class="fas fa-trash"></i></button>
+                                <span class="badge ${esBajo ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'} rounded-pill px-3 ms-2">
+                                    ${esBajo ? 'Crítico' : 'Estable'}
+                                </span>
+                            </div>
                         </td>
                     </tr>`;
             });
         });
 
-        // Delegación de Eventos para Botones
-        document.addEventListener('click', async (e) => {
-            
-            // Lógica: Guardar Material
-            if (e.target.id === 'btnG') {
-                const nombre = document.getElementById('invNombre').value;
-                const stock = document.getElementById('invStock').value;
-                const tipo = document.getElementById('invTipo').value;
-                const capacidad = document.getElementById('invCapacidad').value;
-                const ubicacion = document.getElementById('invUbicacion').value;
+        // --- GUARDAR ---
+        document.getElementById('form-material').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('mat-id').value;
+            const tipo = document.getElementById('mat-tipo').value;
+            const data = {
+                nombre: document.getElementById('mat-nombre').value,
+                tipo: tipo,
+                cantidad: parseInt(document.getElementById('mat-cantidad').value),
+                capacidadTotal: parseInt(document.getElementById('mat-capacidad').value),
+                laboratorio: document.getElementById('mat-lab').value,
+                fechaMod: new Date().toISOString()
+            };
 
-                if (!nombre || !stock) {
-                    alert("El nombre y la cantidad son obligatorios");
-                    return;
-                }
-
-                try {
-                    await addDoc(collection(db, "inventario"), {
-                        nombre: nombre,
-                        tipo: tipo,
-                        cantidadActual: Number(stock),
-                        capacidadTotal: Number(capacidad),
-                        ubicacion: ubicacion,
-                        fechaRegistro: new Date().toISOString()
-                    });
-
-                    // Cerrar Modal
-                    const modalEl = document.getElementById('modalInv');
-                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                    if (modalInstance) modalInstance.hide();
-
-                    // Limpiar campos
-                    document.getElementById('invNombre').value = '';
-                    document.getElementById('invStock').value = '';
-                    document.getElementById('invUbicacion').value = '';
-                    document.getElementById('invCapacidad').value = '';
-
-                } catch (error) {
-                    console.error("Error al guardar:", error);
-                }
+            if (tipo === 'reactivo') {
+                data.etiqueta = document.getElementById('mat-etiqueta').value;
+                data.fichaTecnica = document.getElementById('mat-ficha').value || null;
             }
 
-            // Lógica: Cerrar Sesión
-            if (e.target.closest('#btnLogout')) {
-                if(confirm("¿Seguro que desea salir?")) {
-                    signOut(auth).then(() => window.location.href = "index.html");
+            try {
+                if (id) {
+                    await updateDoc(doc(db, "inventario", id), data);
+                } else {
+                    await addDoc(collection(db, "inventario"), data);
                 }
+                bootstrap.Modal.getInstance(document.getElementById('modalMaterial')).hide();
+            } catch (error) {
+                alert("Error: " + error.message);
             }
-        });
+        };
     </script>
 </body>
 </html>

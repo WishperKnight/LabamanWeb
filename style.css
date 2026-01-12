@@ -68,3 +68,11 @@ body {
 
 /* Progress Bar */
 .progress { border-radius: 10px; background-color: #e9ecef; }
+.icon-box-lg {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

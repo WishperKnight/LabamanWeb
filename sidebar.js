@@ -19,7 +19,15 @@ export function cargarSidebar(paginaActiva) {
             <a class="nav-link rounded-3 p-3 d-flex align-items-center ${paginaActiva === 'equipos' ? 'active-link' : 'inactive-link'}" href="equipos.html">
                 <i class="fas fa-tools me-3"></i> Equipos
             </a>
+
+            <a class="nav-link rounded-3 p-3 d-flex align-items-center ${paginaActiva === 'laboratorios' ? 'active-link' : 'inactive-link'}" href="laboratorios.html">
+                <i class="fas fa-microscope me-3"></i> Laboratorios
+            </a>
             
+            <a class="nav-link rounded-3 p-3 d-flex align-items-center ${paginaActiva === 'inventario' ? 'active-link' : 'inactive-link'}" href="inventario.html">
+                <i class="fas fa-chart-pie me-3"></i> Inventario
+            </a>
+
             <a class="nav-link rounded-3 p-3 d-flex align-items-center ${paginaActiva === 'ejecuciones' ? 'active-link' : 'inactive-link'}" href="ejecuciones.html">
                 <i class="fas fa-play-circle me-3"></i> Ejecuciones
             </a>
@@ -28,9 +36,7 @@ export function cargarSidebar(paginaActiva) {
                 <i class="fas fa-file-medical-alt me-3"></i> Reportes
             </a>
             
-            <a class="nav-link rounded-3 p-3 d-flex align-items-center ${paginaActiva === 'laboratorios' ? 'active-link' : 'inactive-link'}" href="laboratorios.html">
-                <i class="fas fa-microscope me-3"></i> Laboratorios
-            </a>
+           
             
             <div class="my-2 border-top border-white border-opacity-10"></div>
             
