@@ -315,8 +315,8 @@
             link.click();
         };
 
-        document.getElementById('btn-tpl-equipos').onclick = () => descargarCSV("Plantilla_Equipos", "Nombre,Serial,Fabricante,Categoría,Laboratorio,Observaciones", "Microscopio,SN123,Zuzi,Óptica,General,Revisión pendiente");
-        document.getElementById('btn-tpl-stock').onclick = () => descargarCSV("Plantilla_Inventario", "Nombre,Cantidad,Categoria,Laboratorio,Observaciones", "Guantes,100,Fungible,General,Talla M");
+        document.getElementById('btn-tpl-equipos').onclick = () => descargarCSV("Plantilla_Equipos", "Nombre,Modelo,Serial,Fabricante,Categoría,Laboratorio,Stock,Estado", "Agitador Magnético,MODEL 693,S/N,Nahita blue,Volumetría,General,4,Operativo");
+        document.getElementById('btn-tpl-stock').onclick = () => descargarCSV("Plantilla_Inventario", "Tipo,Nombre,Marca_Fabricante,Cantidad_Unidades,Caducidad,Lote,Riqueza,Molaridad,Capacidad", "reactivo,2- Propanol,VWR Chemical,1,2030-04,25D084011,100%,,");
 
     </script>
 </body>
